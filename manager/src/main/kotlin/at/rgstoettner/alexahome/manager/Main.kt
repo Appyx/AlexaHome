@@ -66,6 +66,13 @@ fun safeReadLine(): String {
     return str
 }
 
+fun requiredReadLine(): String {
+    val str = readLine()!!.trim()
+    if (str.isEmpty()) handleFatalError(CliError.INPUT_REQUIRED)
+    println()
+    return str
+}
+
 fun String.println() {
     println(this)
 }

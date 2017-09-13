@@ -6,23 +6,26 @@ import at.rgstoettner.alexahome.manager.data.ExtendedDevice
 class AddController {
 
     fun addDevice() {
-        println("Enter a unique name for the device: (required)")
-        val name = safeReadLine()
-        println("Select a device type: (required)")
+        "Enter a unique name for the device: ".println()
+        val name = requiredReadLine()
+
+        "Select a device type: ".println()
         val types = arrayListOf("CAMERA", "LIGHT", "SMARTLOCK", "SMARTPLUG", "SWITCH", "THERMOSTAT")
         var typeIndex = 0;
         types.forEach {
             println("$typeIndex - $it")
             typeIndex += 1
         }
-        val type = types[safeReadLine().toInt()]
-        println("Enter a description for the device: (optional)")
+        val type = types[requiredReadLine().toInt()]
+
+        "Enter a description for the device: (optional)".println()
         val description = safeReadLine()
-        println("Enter a manufacturer for the device: (optional)")
+        "Enter a manufacturer for the device: (optional)".println()
         val manufacturer = safeReadLine()
-        println("Enter a model name for the device: (optional)")
+        "Enter a model name for the device: (optional)".println()
         val model = safeReadLine()
-        println("The following actions can be used:")
+
+        "The following actions can be used:".println()
         val actions = arrayListOf(
                 "decrementColorTemperature",
                 "incrementColorTemperature",
@@ -38,39 +41,34 @@ class AddController {
                 "turnOn",
                 "turnOff"
         )
-
         var actionIndex = 0;
         actions.forEach {
             println("$actionIndex - $it")
             actionIndex += 1
         }
-        println("Enter the actions your device should support: [number1 number2 numberX]")
-        val actionIndices = safeReadLine().split(" ").map { it.toInt() }
+
+        "Enter the actions your device should support: [number1 number2 numberX]".println()
+        val actionIndices = requiredReadLine().split(" ").map { it.toInt() }
 
         val commandMap = mutableMapOf<String, String>()
         actionIndices.forEach {
             println("Enter the command to execute for '${actions[it]}':")
-            val command = safeReadLine()
+            val command = requiredReadLine()
             commandMap.put(actions[it], command)
         }
 
-        if (name.isNotEmpty() && type.isNotEmpty() && commandMap.isNotEmpty()) {
-            println("$name successfully added. You can now discover the new device with Alexa.")
+        "$name successfully added. You can now discover the device with Alexa.".println()
 
-            val config = loadConfiguration()
-            val device = ExtendedDevice(name, type, commandMap.keys.toList())
-            device.commands = commandMap
+        val config = loadConfiguration()
+        val device = ExtendedDevice(name, type, commandMap.keys.toList())
+        device.commands = commandMap
 
-            if (description.isNotEmpty()) device.friendlyDescription = description
-            if (manufacturer.isNotEmpty()) device.manufacturerName = manufacturer
-            if (model.isNotEmpty()) device.modelName = model
+        if (description.isNotEmpty()) device.friendlyDescription = description
+        if (manufacturer.isNotEmpty()) device.manufacturerName = manufacturer
+        if (model.isNotEmpty()) device.modelName = model
 
-            config.devices.add(device)
-            saveConfiguration(config)
-
-        } else {
-            handleFatalError(CliError.CONFIGURATION_INCOMPLETE)
-        }
+        config.devices.add(device)
+        saveConfiguration(config)
     }
 
 

@@ -9,5 +9,7 @@ enum class CliError {
 
     TLS_CONFIG_FAILED,
 
-    INSTALLATION_FAILED
+    INSTALLATION_FAILED,
+
+    INPUT_REQUIRED
 }

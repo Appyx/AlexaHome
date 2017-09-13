@@ -39,7 +39,7 @@ class InstallController {
         File("tls_gen/client/client-key.pem").copyTo(File("AlexaHome/lambda/tls/client-key.pem"), true)
         File("tls_gen/server/server-keystore.jks").copyTo(File("AlexaHome/skill/src/main/resources/tls/server-keystore.jks"), true)
         File("tls_gen/server/server-truststore.jks").copyTo(File("AlexaHome/skill/src/main/resources/tls/server-truststore.jks"), true)
-        File("tls_gen/client/client-keystore.jks").copyTo(File("AlexaHome/skill/src/main/resources/tls/client-keystore.jks"), true)
+        File("tls_gen/client/client-keystore.jks").copyTo(File("AlexaHome/executor/src/main/resources/tls/client-keystore.jks"), true)
         File("tls_gen/client/client-truststore.jks").copyTo(File("AlexaHome/executor/src/main/resources/tls/client-truststore.jks"), true)
         File("AlexaHome/lambda/tls/pass.txt").writeText(tlsPass, Charsets.UTF_8);
         File("AlexaHome/skill/src/main/resources/tls/tls.properties").writeText(

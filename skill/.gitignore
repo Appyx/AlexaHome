@@ -2,7 +2,7 @@
 .DS_Store
 .gradle
 build/
-src/main/resources/tls
+src/main/resources/tls/
 !gradle/wrapper/gradle-wrapper.jar
 
 ### STS ###

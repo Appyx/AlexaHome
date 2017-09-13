@@ -46,7 +46,7 @@ class InstallController {
                 "server.ssl.trust-store-password=$tlsPass\n" +
                         "server.ssl.key-store-password=$tlsPass\n" +
                         "server.ssl.key-password=$tlsPass")
-        tempDir.deleteRecursively()
+        //tempDir.deleteRecursively()
 
         "Building AWS lambda...".println()
         "cd AlexaHome/lambda && zip -r lambda.zip index.js tls".runCommand()
@@ -60,8 +60,9 @@ class InstallController {
         //TODO: build executor
 
 
-        File("AlexaHome").deleteRecursively()
+        //File("AlexaHome").deleteRecursively()
 
+        "Components successfully installed!".println()
     }
 
     private fun reset(error: CliError) {
@@ -72,10 +73,12 @@ class InstallController {
     fun clear(silent: Boolean = false) {
         "rm -rf AlexaHome".runCommand(false)
         if (!silent) "Removed project".println()
-        "rm -rf lambda.zip".runCommand(false)
+        "rm -rf lambda*".runCommand(false)
         if (!silent) "Removed AWS lambda".println()
         "rm -rf skill*".runCommand(false)
         if (!silent) "Removed skill".println()
+        "rm -rf tls*".runCommand(false)
+        if (!silent) "Removed temporary files".println()
     }
 
 

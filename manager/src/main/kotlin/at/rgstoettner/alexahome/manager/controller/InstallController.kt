@@ -36,9 +36,17 @@ class InstallController {
     }
 
     private fun reset(error: CliError) {
-        "rm -rf AlexaHome".runCommand(false)
-        "rm -rf lambda.zip".runCommand(false)
+        clear(true)
         handleFatalError(error)
+    }
+
+    fun clear(silent: Boolean = false) {
+        "rm -rf AlexaHome".runCommand(false)
+        if (!silent) "Removed project".println()
+        "rm -rf lambda.zip".runCommand(false)
+        if (!silent) "Removed AWS lambda".println()
+        "rm -rf skill*".runCommand(false)
+        if (!silent) "Removed skill".println()
     }
 
 

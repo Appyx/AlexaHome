@@ -49,11 +49,15 @@ rm server/*p12
 #move files
 cd ..
 test -d ../lambda/tls || mkdir -p ../lambda/tls && cp -rf tls_gen/client/* ../lambda/tls
-test -d ../skill/tls || mkdir -p ../skill/tls && cp -rf tls_gen/server/* ../skill/tls
+test -d ../skill/src/main/resources/tls || mkdir -p ../skill/src/main/resources/tls && cp -rf tls_gen/server/* ../skill/src/main/resources/tls
 
 #store passwords
 echo $1 > ../lambda/tls/pass.txt
-echo tls_password=$1 > ../skill/gradle.properties
+cat > ../skill/src/main/resources/tls/tls.properties << EOL
+server.ssl.trust-store-password=$1
+server.ssl.key-store-password=$1
+server.ssl.key-password=$1
+EOL
 
 #cleanup
 rm -r tls_gen

@@ -20,6 +20,7 @@ fun main(args: Array<String>) {
             The following commands are available:
 
             * install                   - Installs the necessary components
+            * clear                     - Removes the installed comonents
             * add device                - Adds a device
             * add scene                 - Adds a scene
             * list                      - List all scenes and devices
@@ -41,6 +42,7 @@ fun main(args: Array<String>) {
     if (line.isEmpty()) handleFatalError(CliError.NUMBER_OF_ARGUMENTS)
     val parts = line.split(" ")
     when {
+        parts[0] == "clear" -> CliParser().clear()
         parts[0] == "install" -> CliParser().install()
         parts[0] == "add" -> CliParser().add(parts)
         parts[0] == "wipe" -> CliParser().wipe(parts)

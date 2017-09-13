@@ -30,9 +30,7 @@ repositories {
     maven { url "https://repo.spring.io/snapshot" }
     maven { url "https://repo.spring.io/milestone" }
 }
-processResources {
-    expand(project.properties)
-}
+
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')

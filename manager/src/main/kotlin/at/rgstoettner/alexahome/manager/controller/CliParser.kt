@@ -70,4 +70,8 @@ class CliParser {
             else -> handleFatalError(CliError.NUMBER_OF_ARGUMENTS)
         }
     }
+
+    fun clear() {
+        InstallController().clear()
+    }
 }

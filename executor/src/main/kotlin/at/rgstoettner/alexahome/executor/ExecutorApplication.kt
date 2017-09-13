@@ -15,9 +15,9 @@ class ExecutorApplication {
 
 fun main(args: Array<String>) {
     val pass = ClassPathResource("tls/pass.txt").inputStream.bufferedReader(Charsets.UTF_8).readText()
-    System.setProperty("javax.net.ssl.trustStore", ClassPathResource("tls/client-truststore.jks").file.path)
+    System.setProperty("javax.net.ssl.trustStore", ExecutorApplication::class.java.classLoader.getResource("tls/client-truststore.jks").file)
     System.setProperty("javax.net.ssl.trustStorePassword", pass);
-    System.setProperty("javax.net.ssl.keyStore", ClassPathResource("tls/client-keystore.jks").file.path)
+    System.setProperty("javax.net.ssl.keyStore", ExecutorApplication::class.java.classLoader.getResource("tls/client-keystore.jks").file)
     System.setProperty("javax.net.ssl.keyStorePassword", pass);
 
     SpringApplication.run(ExecutorApplication::class.java, *args)

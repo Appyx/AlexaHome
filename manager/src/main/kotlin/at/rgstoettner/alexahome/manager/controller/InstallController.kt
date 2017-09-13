@@ -20,19 +20,18 @@ class InstallController {
         "Enter a password for the TLS keys: (optional)".println()
         var tlsPass = safeReadLine()
         if (tlsPass.isEmpty()) tlsPass = UUID.randomUUID().toString()
-        "Enter your remote ip/domain: (required)".println()
+        "Enter your local ip: (required)".println()
+        val tlsLocalIP = safeReadLine()
+        if (tlsLocalIP.isEmpty()) reset(CliError.TLS_CONFIG_FAILED)
+        "Enter your remote domain: (required)".println()
         val tlsRemoteDomain = safeReadLine()
         if (tlsRemoteDomain.isEmpty()) reset(CliError.TLS_CONFIG_FAILED)
-
-        "Enter your local ip/domain: (required)".println()
-        val tlsLocalDomain = safeReadLine()
-        if (tlsLocalDomain.isEmpty()) reset(CliError.TLS_CONFIG_FAILED)
 
         "Creating tls configuration...".println()
         //create temporary dir for generation of the tls files and run the generation script
         val tempDir = File("tls_gen")
         tempDir.mkdir()
-        "cd tls_gen && ../AlexaHome/tls/tls.sh $tlsPass $tlsLocalDomain $tlsRemoteDomain".runCommand()
+        "cd tls_gen && ../AlexaHome/tls/tls.sh $tlsPass $tlsLocalIP $tlsRemoteDomain".runCommand()
 
         //organize the files
         File("tls_gen/client/server-cert.pem").copyTo(File("AlexaHome/lambda/tls/server-cert.pem"), true)

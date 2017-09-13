@@ -1,3 +1,4 @@
+#!/bin/sh
 if [ -z "$1" ]; then
     echo "please provide a password"
     exit
@@ -52,12 +53,7 @@ test -d ../skill/tls || mkdir -p ../skill/tls && cp -rf tls_gen/server/* ../skil
 
 #store passwords
 echo $1 > ../lambda/tls/pass.txt
-
-cat > ../skill/tls/pass.properties << EOL
-server.ssl.trust-store-password=$1
-server.ssl.key-store-password=$1
-server.ssl.key-password=$1
-EOL
+echo tls_password=$1 > ../skill/gradle.properties
 
 #cleanup
 rm -r tls_gen

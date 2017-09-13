@@ -8,7 +8,6 @@ class AddController {
     fun addDevice() {
         println("Enter a unique name for the device: (required)")
         val name = safeReadLine()
-        println()
         println("Select a device type: (required)")
         val types = arrayListOf("CAMERA", "LIGHT", "SMARTLOCK", "SMARTPLUG", "SWITCH", "THERMOSTAT")
         var typeIndex = 0;
@@ -17,16 +16,12 @@ class AddController {
             typeIndex += 1
         }
         val type = types[safeReadLine().toInt()]
-        println()
         println("Enter a description for the device: (optional)")
         val description = safeReadLine()
-        println()
         println("Enter a manufacturer for the device: (optional)")
         val manufacturer = safeReadLine()
-        println()
         println("Enter a model name for the device: (optional)")
         val model = safeReadLine()
-        println()
         println("The following actions can be used:")
         val actions = arrayListOf(
                 "decrementColorTemperature",
@@ -51,7 +46,6 @@ class AddController {
         }
         println("Enter the actions your device should support: [number1 number2 numberX]")
         val actionIndices = safeReadLine().split(" ").map { it.toInt() }
-        println()
 
         val commandMap = mutableMapOf<String, String>()
         actionIndices.forEach {
@@ -59,7 +53,6 @@ class AddController {
             val command = safeReadLine()
             commandMap.put(actions[it], command)
         }
-        println()
 
         if (name.isNotEmpty() && type.isNotEmpty() && commandMap.isNotEmpty()) {
             println("$name successfully added. You can now discover the new device with Alexa.")

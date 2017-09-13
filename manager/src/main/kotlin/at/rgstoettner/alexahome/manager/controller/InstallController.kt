@@ -1,6 +1,10 @@
 package at.rgstoettner.alexahome.manager.controller
 
-import java.io.IOException
+import at.rgstoettner.alexahome.manager.CliError
+import at.rgstoettner.alexahome.manager.handleFatalError
+import at.rgstoettner.alexahome.manager.println
+import at.rgstoettner.alexahome.manager.safeReadLine
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class InstallController {
@@ -9,26 +13,43 @@ class InstallController {
 
 
     fun install() {
-        var error = false
-        error = "git clone $git".runCommand() == null
+        "Fetching project...".println()
+        "git clone $git".runCommand()
+
+        "Enter a password for the TLS keys: (optional)".println()
+        var tlsPass = safeReadLine()
+        if (tlsPass.isEmpty()) tlsPass = UUID.randomUUID().toString()
+        "Enter your domain: (required)".println()
+        val tlsDomain = safeReadLine()
+        if (tlsDomain.isEmpty()) reset(CliError.TLS_CONFIG_FAILED)
+        "Creating tls configuration...".println()
+        "cd AlexaHome/tls && ./tls.sh $tlsPass $tlsDomain".runCommand()
+
+        "Building AWS lambda...".println()
+        "cd AlexaHome/lambda && zip ../../lambda.zip tls/ index.js".runCommand()
+
+        "Building skill...".println()
+        "cd AlexaHome/skill && gradle build".runCommand()
+        "cp AlexaHome/skill/build/libs/skill* .".runCommand()
 
 
     }
 
+    private fun reset(error: CliError) {
+        "rm -rf AlexaHome".runCommand(false)
+        "rm -rf lambda.zip".runCommand(false)
+        handleFatalError(error)
+    }
 
-    private fun String.runCommand(): String? {
-        try {
-            val parts = this.split("\\s".toRegex())
-            val proc = ProcessBuilder(*parts.toTypedArray())
-                    .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                    .redirectError(ProcessBuilder.Redirect.PIPE)
-                    .start()
 
-            proc.waitFor(60, TimeUnit.MINUTES)
-            return proc.inputStream.bufferedReader().readText()
-        } catch (e: IOException) {
-            e.printStackTrace()
-            return null
+    private fun String.runCommand(output: Boolean = true) {
+        val parts = this.split("//s".toRegex())
+        val builder = ProcessBuilder("/bin/sh", "-c", *parts.toTypedArray())
+        builder.redirectErrorStream(true)
+        val proc = builder.start()
+        proc.waitFor(60, TimeUnit.MINUTES)
+        if (output) {
+            println(proc.inputStream.bufferedReader().readText())
         }
     }
 }

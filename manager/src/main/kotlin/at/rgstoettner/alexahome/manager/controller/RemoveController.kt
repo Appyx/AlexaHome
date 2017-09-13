@@ -17,7 +17,6 @@ class RemoveController {
     fun wipeAll() {
         println("This will permanently remove all data. Are you Sure? [yes/no]")
         val answer = safeReadLine()
-        println()
         if (answer == "yes") {
             if (getConfigFile().exists()) {
                 getConfigFile().delete()

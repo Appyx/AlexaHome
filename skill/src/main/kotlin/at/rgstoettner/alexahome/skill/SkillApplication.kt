@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController
 
 
 @SpringBootApplication
-@PropertySource(value = "file:tls/pass.properties")
 class SkillApplication
 
 fun main(args: Array<String>) {

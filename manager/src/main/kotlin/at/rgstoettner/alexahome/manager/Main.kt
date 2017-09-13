@@ -1,6 +1,6 @@
 package at.rgstoettner.alexahome.manager
 
-import at.rgstoettner.alexahome.manager.controller.CliController
+import at.rgstoettner.alexahome.manager.controller.CliParser
 import at.rgstoettner.alexahome.manager.data.Configuration
 import com.google.gson.Gson
 import java.io.File
@@ -38,16 +38,15 @@ fun main(args: Array<String>) {
     println(welcome)
 
     val line = safeReadLine()
-    println()
     if (line.isEmpty()) handleFatalError(CliError.NUMBER_OF_ARGUMENTS)
     val parts = line.split(" ")
     when {
-        parts[0] == "install" -> CliController().install()
-        parts[0] == "add" -> CliController().add(parts)
-        parts[0] == "wipe" -> CliController().wipe(parts)
-        parts[0] == "list" -> CliController().list(parts)
-        parts[0] == "remove" -> CliController().remove(parts)
-        parts[0] == "edit" -> CliController().edit(parts)
+        parts[0] == "install" -> CliParser().install()
+        parts[0] == "add" -> CliParser().add(parts)
+        parts[0] == "wipe" -> CliParser().wipe(parts)
+        parts[0] == "list" -> CliParser().list(parts)
+        parts[0] == "remove" -> CliParser().remove(parts)
+        parts[0] == "edit" -> CliParser().edit(parts)
         else -> handleFatalError(CliError.UNKNOWN_ARGUMENTS)
 
     }
@@ -59,7 +58,13 @@ fun handleFatalError(cause: CliError) {
 }
 
 fun safeReadLine(): String {
-    return readLine()!!.trim()
+    val str = readLine()!!.trim()
+    println()
+    return str
+}
+
+fun String.println() {
+    println(this)
 }
 
 

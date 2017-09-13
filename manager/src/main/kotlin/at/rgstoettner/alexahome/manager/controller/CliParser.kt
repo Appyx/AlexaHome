@@ -3,7 +3,7 @@ package at.rgstoettner.alexahome.manager.controller
 import at.rgstoettner.alexahome.manager.CliError
 import at.rgstoettner.alexahome.manager.handleFatalError
 
-class CliController {
+class CliParser {
 
     fun install() {
         InstallController().install()

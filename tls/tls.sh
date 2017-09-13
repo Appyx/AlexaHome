@@ -12,16 +12,17 @@ fi
 #set locale for correct password encoding
 LC_CTYPE=en_US.utf8
 
-#create folders
-mkdir tls_gen
-cd tls_gen
 mkdir server
 mkdir client
+
 #generate server keystore
 keytool -genkeypair -alias server-keypair -keyalg RSA -keysize 2048 -validity 3650 -dname "CN=server,O=$2" -keypass $1 -keystore server/server-keystore.jks -storepass $1 -ext san=dns:$2
 
 #export server cert
 keytool -exportcert -alias server-keypair -file server/server-public-key.cer -keystore server/server-keystore.jks -storepass $1
+
+#import server cert to client-truststore - will be the ca for the client
+keytool -importcert -keystore client/client-truststore.jks -alias server-public-key -file server/server-public-key.cer -storepass $1 -noprompt
 
 #convert server keystore to pkcs12
 keytool -importkeystore -srckeystore server/server-keystore.jks -srcstorepass $1 -destkeystore server/server-keystore.p12 -deststorepass $1 -deststoretype PKCS12
@@ -45,14 +46,3 @@ keytool -importkeystore -srckeystore client/client-keystore.jks -srcstorepass $1
 openssl pkcs12 -in client/client-keystore.p12 -nokeys -out client/client-cert.pem -passin pass:$1
 openssl pkcs12 -in client/client-keystore.p12 -nocerts -out client/client-key.pem -passin pass:$1 -passout pass:$1
 
-#delete temporary files
-rm client/*jks client/*p12 client/*cer
-rm server/*p12
-
-#move files
-cd ..
-test -d ../lambda/tls || mkdir -p ../lambda/tls && cp -rf tls_gen/client/* ../lambda/tls
-test -d ../skill/src/main/resources/tls || mkdir -p ../skill/src/main/resources/tls && cp -rf tls_gen/server/* ../skill/src/main/resources/tls
-
-#cleanup
-rm -r tls_gen

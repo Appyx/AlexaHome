@@ -10,7 +10,7 @@ exports.handler = function (request, context) {
         ca: fs.readFileSync("tls/server-cert.pem"),
         key: fs.readFileSync("tls/client-key.pem"),
         cert: fs.readFileSync("tls/client-cert.pem"),
-        passphrase: fs.readFileSync("tls/pass.txt"),
+        passphrase: fs.readFileSync("tls/pass.txt","UTF-8"),
         headers: {
             'Content-Type': 'application/json'
         }

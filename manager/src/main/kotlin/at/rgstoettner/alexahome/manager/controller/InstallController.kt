@@ -39,14 +39,15 @@ class InstallController {
         File("tls_gen/client/client-key.pem").copyTo(File("AlexaHome/lambda/tls/client-key.pem"), true)
         File("tls_gen/server/server-keystore.jks").copyTo(File("AlexaHome/skill/src/main/resources/tls/server-keystore.jks"), true)
         File("tls_gen/server/server-truststore.jks").copyTo(File("AlexaHome/skill/src/main/resources/tls/server-truststore.jks"), true)
-        //TODO: executor keystore and truststore
-
+        File("tls_gen/client/client-keystore.jks").copyTo(File("AlexaHome/skill/src/main/resources/tls/client-keystore.jks"), true)
+        File("tls_gen/client/client-truststore.jks").copyTo(File("AlexaHome/executor/src/main/resources/tls/client-truststore.jks"), true)
         File("AlexaHome/lambda/tls/pass.txt").writeText(tlsPass, Charsets.UTF_8);
         File("AlexaHome/skill/src/main/resources/tls/tls.properties").writeText(
                 "server.ssl.trust-store-password=$tlsPass\n" +
                         "server.ssl.key-store-password=$tlsPass\n" +
-                        "server.ssl.key-password=$tlsPass")
-        //tempDir.deleteRecursively()
+                        "server.ssl.key-password=$tlsPass", Charsets.UTF_8)
+        File("AlexaHome/executor/src/main/resources/tls/pass.txt").writeText(tlsPass, Charsets.UTF_8);
+        tempDir.deleteRecursively()
 
         "Building AWS lambda...".println()
         "cd AlexaHome/lambda && zip -r lambda.zip index.js tls".runCommand()
@@ -57,10 +58,10 @@ class InstallController {
         "cp AlexaHome/skill/build/libs/skill* .".runCommand()
 
         "Building executor...".println()
-        //TODO: build executor
+        "cd AlexaHome/executor && gradle build".runCommand()
+        "cp AlexaHome/executor/build/libs/executor* .".runCommand()
 
-
-        //File("AlexaHome").deleteRecursively()
+        File("AlexaHome").deleteRecursively()
 
         "Components successfully installed!".println()
     }
@@ -77,6 +78,8 @@ class InstallController {
         if (!silent) "Removed AWS lambda".println()
         "rm -rf skill*".runCommand(false)
         if (!silent) "Removed skill".println()
+        "rm -rf executor*".runCommand(false)
+        if (!silent) "Removed executor".println()
         "rm -rf tls*".runCommand(false)
         if (!silent) "Removed temporary files".println()
     }

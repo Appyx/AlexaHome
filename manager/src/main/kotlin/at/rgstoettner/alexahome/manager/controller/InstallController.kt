@@ -12,8 +12,23 @@ class InstallController {
 
     private val git = "https://github.com/Appyx/AlexaHome.git"
 
+    private val projectDir = File("AlexaHome")
+    private val tlsDir = File("tls_gen")
 
     fun install() {
+        try {
+            tryInstall()
+            "Components successfully installed!".println()
+        } catch (ex: Throwable) {
+            ("An error occurred! - Cleaning up...").println()
+            reset(CliError.INSTALLATION_FAILED)
+        } finally {
+            tlsDir.deleteRecursively()
+            projectDir.deleteRecursively()
+        }
+    }
+
+    fun tryInstall() {
         "Fetching project...".println()
         "git clone $git".runCommand()
 
@@ -29,8 +44,8 @@ class InstallController {
 
         "Creating tls configuration...".println()
         //create temporary dir for generation of the tls files and run the generation script
-        val tempDir = File("tls_gen")
-        tempDir.mkdir()
+
+        tlsDir.mkdir()
         "cd tls_gen && ../AlexaHome/tls/tls.sh $tlsPass $tlsLocalIP $tlsRemoteDomain".runCommand()
 
         //organize the files
@@ -47,7 +62,6 @@ class InstallController {
                         "server.ssl.key-store-password=$tlsPass\n" +
                         "server.ssl.key-password=$tlsPass", Charsets.UTF_8)
         File("AlexaHome/executor/src/main/resources/tls/pass.txt").writeText(tlsPass, Charsets.UTF_8);
-        tempDir.deleteRecursively()
 
         "Building AWS lambda...".println()
         "cd AlexaHome/lambda && zip -r lambda.zip index.js tls".runCommand()
@@ -60,10 +74,6 @@ class InstallController {
         "Building executor...".println()
         "cd AlexaHome/executor && gradle build".runCommand()
         "cp AlexaHome/executor/build/libs/executor* .".runCommand()
-
-        File("AlexaHome").deleteRecursively()
-
-        "Components successfully installed!".println()
     }
 
     private fun reset(error: CliError) {

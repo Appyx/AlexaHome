@@ -7,5 +7,7 @@ enum class CliError {
 
     GIT_INSTALL_FAILED,
 
-    TLS_CONFIG_FAILED
+    TLS_CONFIG_FAILED,
+
+    INSTALLATION_FAILED
 }

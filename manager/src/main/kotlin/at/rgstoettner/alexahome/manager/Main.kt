@@ -9,12 +9,10 @@ import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
 
-    if (args.isNotEmpty()) {
-        configPath = args[0]
-    }
-
-    val welcome =
-            """
+    val parts: List<String>
+    if (args.isEmpty()) {
+        val welcome =
+                """
             Welcome to the HomeManager.
             Here you can manage your Alexa/HomeKit devices.
             The following commands are available:
@@ -36,11 +34,15 @@ fun main(args: Array<String>) {
 
             Enter a command:
             """.trimIndent()
-    println(welcome)
+        println(welcome)
 
-    val line = safeReadLine()
-    if (line.isEmpty()) handleFatalError(CliError.NUMBER_OF_ARGUMENTS)
-    val parts = line.split(" ")
+        val line = safeReadLine()
+        if (line.isEmpty()) handleFatalError(CliError.NUMBER_OF_ARGUMENTS)
+        parts = line.split(" ")
+    } else {
+        parts = args.toList()
+    }
+
     when {
         parts[0] == "clear" -> CliParser().clear()
         parts[0] == "install" -> CliParser().install()
@@ -50,7 +52,6 @@ fun main(args: Array<String>) {
         parts[0] == "remove" -> CliParser().remove(parts)
         parts[0] == "edit" -> CliParser().edit(parts)
         else -> handleFatalError(CliError.UNKNOWN_ARGUMENTS)
-
     }
 }
 

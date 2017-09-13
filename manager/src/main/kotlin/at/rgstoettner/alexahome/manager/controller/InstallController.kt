@@ -4,6 +4,7 @@ import at.rgstoettner.alexahome.manager.CliError
 import at.rgstoettner.alexahome.manager.handleFatalError
 import at.rgstoettner.alexahome.manager.println
 import at.rgstoettner.alexahome.manager.safeReadLine
+import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -24,9 +25,15 @@ class InstallController {
         if (tlsDomain.isEmpty()) reset(CliError.TLS_CONFIG_FAILED)
         "Creating tls configuration...".println()
         "cd AlexaHome/tls && ./tls.sh $tlsPass $tlsDomain".runCommand()
+        File("AlexaHome/lambda/tls/pass.txt").writeText(tlsPass, Charsets.UTF_8);
+        File("AlexaHome/skill/src/main/resources/tls/tls.properties").writeText(
+                "server.ssl.trust-store-password=$tlsPass\n" +
+                        "server.ssl.key-store-password=$tlsPass\n" +
+                        "server.ssl.key-password=$tlsPass")
+
 
         "Building AWS lambda...".println()
-        "cd AlexaHome/lambda && zip ../../lambda.zip tls/ index.js".runCommand()
+        "cd AlexaHome/lambda && zip -r lambda.zip index.js tls && mv lambda.zip ../../".runCommand()
 
         "Building skill...".println()
         "cd AlexaHome/skill && gradle build".runCommand()
@@ -52,7 +59,7 @@ class InstallController {
 
     private fun String.runCommand(output: Boolean = true) {
         val parts = this.split("//s".toRegex())
-        val builder = ProcessBuilder("/bin/sh", "-c", *parts.toTypedArray())
+        val builder = ProcessBuilder("/bin/bash", "-c", *parts.toTypedArray())
         builder.redirectErrorStream(true)
         val proc = builder.start()
         proc.waitFor(60, TimeUnit.MINUTES)

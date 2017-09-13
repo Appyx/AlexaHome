@@ -5,7 +5,12 @@ if [ -z "$1" ]; then
 fi
 
 if [ -z "$2" ]; then
-    echo "please provide a domain"
+    echo "please provide a local ip/domain"
+    exit
+fi
+
+if [ -z "$3" ]; then
+    echo "please provide a remote ip/domain"
     exit
 fi
 
@@ -16,7 +21,7 @@ mkdir server
 mkdir client
 
 #generate server keystore
-keytool -genkeypair -alias server-keypair -keyalg RSA -keysize 2048 -validity 3650 -dname "CN=server,O=$2" -keypass $1 -keystore server/server-keystore.jks -storepass $1 -ext san=dns:$2
+keytool -genkeypair -alias server-keypair -keyalg RSA -keysize 2048 -validity 3650 -dname "CN=server,O=$2" -keypass $1 -keystore server/server-keystore.jks -storepass $1 -ext san=dns:$2 -ext san=dns:$3
 
 #export server cert
 keytool -exportcert -alias server-keypair -file server/server-public-key.cer -keystore server/server-keystore.jks -storepass $1

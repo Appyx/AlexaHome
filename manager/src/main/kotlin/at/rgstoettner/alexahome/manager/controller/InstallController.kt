@@ -20,33 +20,49 @@ class InstallController {
         "Enter a password for the TLS keys: (optional)".println()
         var tlsPass = safeReadLine()
         if (tlsPass.isEmpty()) tlsPass = UUID.randomUUID().toString()
-        "Enter your domain: (required)".println()
-        val tlsDomain = safeReadLine()
-        if (tlsDomain.isEmpty()) reset(CliError.TLS_CONFIG_FAILED)
+        "Enter your remote ip/domain: (required)".println()
+        val tlsRemoteDomain = safeReadLine()
+        if (tlsRemoteDomain.isEmpty()) reset(CliError.TLS_CONFIG_FAILED)
+
+        "Enter your local ip/domain: (required)".println()
+        val tlsLocalDomain = safeReadLine()
+        if (tlsLocalDomain.isEmpty()) reset(CliError.TLS_CONFIG_FAILED)
 
         "Creating tls configuration...".println()
+        //create temporary dir for generation of the tls files and run the generation script
         val tempDir = File("tls_gen")
         tempDir.mkdir()
+        "cd tls_gen && ../AlexaHome/tls/tls.sh $tlsPass $tlsLocalDomain $tlsRemoteDomain".runCommand()
 
-        "cd tls_gen && .AlexaHome/tls/tls.sh $tlsPass $tlsDomain".runCommand()
+        //organize the files
+        File("tls_gen/client/server-cert.pem").copyTo(File("AlexaHome/lambda/tls/server-cert.pem"), true)
+        File("tls_gen/client/client-cert.pem").copyTo(File("AlexaHome/lambda/tls/client-cert.pem"), true)
+        File("tls_gen/client/client-key.pem").copyTo(File("AlexaHome/lambda/tls/client-key.pem"), true)
+        File("tls_gen/server/server-keystore.jks").copyTo(File("AlexaHome/skill/src/main/resources/tls/server-keystore.jks"), true)
+        File("tls_gen/server/server-truststore.jks").copyTo(File("AlexaHome/skill/src/main/resources/tls/server-truststore.jks"), true)
+        //TODO: executor keystore and truststore
+
         File("AlexaHome/lambda/tls/pass.txt").writeText(tlsPass, Charsets.UTF_8);
         File("AlexaHome/skill/src/main/resources/tls/tls.properties").writeText(
                 "server.ssl.trust-store-password=$tlsPass\n" +
                         "server.ssl.key-store-password=$tlsPass\n" +
                         "server.ssl.key-password=$tlsPass")
-
-        File("tls_gen/client/server-cert.pem").copyTo(File("AlexaHome/lambda/tls"), true)
-        File("tls_gen/client/client-cert.pem").copyTo(File("AlexaHome/lambda/tls"), true)
-        File("tls_gen/client/client-key.pem").copyTo(File("AlexaHome/lambda/tls"), true)
-        //tempDir.deleteRecursively()
-
+        tempDir.deleteRecursively()
 
         "Building AWS lambda...".println()
-        "cd AlexaHome/lambda && zip -r lambda.zip index.js tls && mv lambda.zip ../../".runCommand()
+        "cd AlexaHome/lambda && zip -r lambda.zip index.js tls".runCommand()
+        File("AlexaHome/lambda/lambda.zip").copyTo(File("lambda.zip"), true)
 
         "Building skill...".println()
         "cd AlexaHome/skill && gradle build".runCommand()
         "cp AlexaHome/skill/build/libs/skill* .".runCommand()
+
+        "Building executor...".println()
+        //TODO: build executor
+
+
+        File("AlexaHome").deleteRecursively()
+
     }
 
     private fun reset(error: CliError) {

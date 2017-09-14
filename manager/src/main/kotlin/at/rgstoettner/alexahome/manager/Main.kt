@@ -19,9 +19,9 @@ fun main(args: Array<String>) {
 
             * install                   - Installs the base components to work with other commands
             * uninstall                 - Uninstalls the base components
-            * clear                     - Removes all generated content but the base components
             * add device                - Adds a device
             * add scene                 - Adds a scene
+            * add user                  - Adds a user
             * list                      - List all scenes and devices
             * list devices              - List all scenes and devices
             * list scenes               - List all scenes and devices
@@ -29,6 +29,7 @@ fun main(args: Array<String>) {
             * edit scene <id>           - Edit a device
             * remove device <id>        - Removes a device
             * remove scene <id>         - Removes a scene
+            * remove user <id>          - Removes a user
             * wipe                      - Removes everything
 
             Each command starts an assistant which guides you through the process.
@@ -45,7 +46,6 @@ fun main(args: Array<String>) {
     }
 
     when {
-        parts[0] == "clear" -> CliParser().clear()
         parts[0] == "install" -> CliParser().install()
         parts[0] == "uninstall" -> CliParser().uninstall()
         parts[0] == "add" -> CliParser().add(parts)

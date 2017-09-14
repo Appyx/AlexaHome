@@ -8,9 +8,7 @@ import java.util.concurrent.TimeUnit
 class InstallController {
 
     private val git = "https://github.com/Appyx/AlexaHome.git"
-
-    private val projectDir = File("AlexaHome")
-    private val tlsDir = File("tls_gen")
+    private var log = ""
 
     private val isInstalled = File("AlexaHome/tls/private/ca.key").exists()
 
@@ -33,14 +31,18 @@ class InstallController {
         "cd AlexaHome/tls/ && ./gen_ca.sh $pass".runCommand()
 
         File("AlexaHome/tls/certs/ca.crt").copyTo(File("AlexaHome/lambda/tls/ca.crt"), true)
-        File("AlexaHome/tls/users").mkdir()
+        if (log.contains("error", true)) {
+            "rm -rf AlexaHome/tls/server AlexaHome/tls/client".runCommand(false)
+            handleFatalError(CliError.TLS_CONFIG_FAILED)
+        }
         "Successfully installed the base components!".println()
     }
 
     fun uninstall(force: Boolean = false) {
+        if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
         fun remove() {
             "rm -rf AlexaHome".runCommand(false)
-            "Removed base components".println()
+            "Successfully uninstalled!".println()
         }
 
         if (force) {
@@ -62,6 +64,7 @@ class InstallController {
 
         "Enter the Amazon Developer Account".println()
         val account = requiredReadLine()
+        if (File("AlexaHome/lambda/tls/users/$account").exists()) handleFatalError(CliError.USER_ALREADY_EXISTS)
         "Enter the password for the Certificate Authority:".println()
         val rootPass = requiredReadLine()
         "Enter a password for the user keys: (optional)".println()
@@ -73,15 +76,16 @@ class InstallController {
         val tlsRemoteDomain = requiredReadLine()
 
         "Creating tls configuration...".println()
-
-        "rm -r server client".runCommand(false)
-        if (File("AlexaHome/tls/users/$account").exists()) handleFatalError(CliError.USER_ALREADY_EXISTS)
         "cd AlexaHome/tls && ./gen_user.sh $tlsPass $tlsLocalIP $tlsRemoteDomain $rootPass $account".runCommand()
+        if (log.contains("exception", true) || log.contains("error", true)) {
+            "rm -rf AlexaHome/tls/server AlexaHome/tls/client".runCommand(false)
+            handleFatalError(CliError.TLS_CONFIG_FAILED)
+        }
 
         "Building AWS lambda...".println()
         File("AlexaHome/tls/client/client-cert.pem").copyTo(File("AlexaHome/lambda/tls/users/$account/client-cert.pem"), true)
         File("AlexaHome/tls/client/client-key.pem").copyTo(File("AlexaHome/lambda/tls/users/$account/client-key.pem"), true)
-        File("AlexaHome/lambda/tls/pass.txt").writeText(tlsPass, Charsets.UTF_8);
+        File("AlexaHome/lambda/tls/users/$account/pass.txt").writeText(tlsPass, Charsets.UTF_8)
         "cd AlexaHome/lambda && zip -r lambda.zip index.js tls".runCommand()
         File("AlexaHome/lambda/lambda.zip").copyTo(File("lambda.zip"), true)
 
@@ -103,20 +107,28 @@ class InstallController {
                         "server.ssl.key-password=$tlsPass", Charsets.UTF_8)
         "cd AlexaHome/skill && gradle build".runCommand()
         "cp AlexaHome/skill/build/libs/skill* $account".runCommand()
+
+        "rm -rf server client".runCommand(false)
+        "Successfully created user!".println()
+        "Created file: lambda.zip".println()
+        "Created directory: $account ".println()
     }
 
-
-    fun clear(silent: Boolean = false) {
-        "rm -rf AlexaHome".runCommand(false)
-        if (!silent) "Removed git".println()
-        "rm -rf lambda*".runCommand(false)
-        if (!silent) "Removed AWS lambda".println()
-        "rm -rf skill*".runCommand(false)
-        if (!silent) "Removed skill".println()
-        "rm -rf executor*".runCommand(false)
-        if (!silent) "Removed executor".println()
-        "rm -rf tls*".runCommand(false)
-        if (!silent) "Removed temporary files".println()
+    fun removeUser(account: String) {
+        if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
+        val file = File("AlexaHome/lambda/tls/users/$account")
+        if (file.exists()) {
+            file.deleteRecursively()
+            "Successfully removed user $account!".println()
+            val parent = File("AlexaHome/lambda/tls/users")
+            if (parent.walkTopDown().count() != 0) {
+                "cd AlexaHome/lambda && zip -r lambda.zip index.js tls".runCommand()
+                File("AlexaHome/lambda/lambda.zip").copyTo(File("lambda.zip"), true)
+                "Created file: lambda.zip".println()
+            }
+        } else {
+            handleFatalError(CliError.UNKNOWN_USER)
+        }
     }
 
 
@@ -127,7 +139,9 @@ class InstallController {
         val proc = builder.start()
         proc.waitFor(60, TimeUnit.MINUTES)
         if (output) {
-            println(proc.inputStream.bufferedReader().readText())
+            val text = proc.inputStream.bufferedReader().readText()
+            log = log.plus(text)
+            println(text)
         }
     }
 }

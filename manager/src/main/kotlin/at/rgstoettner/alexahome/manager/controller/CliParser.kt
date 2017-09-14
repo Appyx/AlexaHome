@@ -47,6 +47,7 @@ class CliParser {
                 when {
                     args[1] == "device" -> RemoveController().removeDevice(args[2])
                     args[1] == "scene" -> RemoveController().removeScene(args[2])
+                    args[1] == "user" -> InstallController().removeUser(args[2])
                     else -> handleFatalError(CliError.UNKNOWN_ARGUMENTS)
                 }
             }
@@ -74,9 +75,5 @@ class CliParser {
             }
             else -> handleFatalError(CliError.NUMBER_OF_ARGUMENTS)
         }
-    }
-
-    fun clear() {
-        InstallController().clear()
     }
 }

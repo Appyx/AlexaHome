@@ -1,3 +1,6 @@
+LC_ALL=en_US.UTF-8
+LANG=en_US.UTF-8
+
 if [ -z "$1" ]; then
 	echo "please provide a password for the CA"
 	exit

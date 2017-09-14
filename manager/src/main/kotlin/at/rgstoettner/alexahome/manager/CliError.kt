@@ -17,5 +17,7 @@ enum class CliError {
 
     NOT_INSTALLED,
 
-    USER_ALREADY_EXISTS
+    USER_ALREADY_EXISTS,
+
+    UNKNOWN_USER
 }

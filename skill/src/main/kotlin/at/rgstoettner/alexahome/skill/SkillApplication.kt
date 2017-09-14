@@ -39,7 +39,36 @@ class HttpsController {
     @RequestMapping(value = "/", method = arrayOf(RequestMethod.POST))
     fun user(@RequestBody test: String): String {
         println(test)
-        return "hello"
+        return """{
+            "header": {
+                "payloadVersion": "2",
+                "namespace": "Alexa.ConnectedHome.Discovery",
+                "name": "DiscoverAppliancesResponse"
+            },
+            "payload": {
+                "discoveredAppliances": [
+                    {
+                        "friendlyDescription": "Virtual Device for the Sample Hello World Skill",
+                        "modelName": "model 01",
+                        "additionalApplianceDetails": {
+                        "extraDetail3": "but they should only be used for reference purposes.",
+                        "extraDetail2": "There can be multiple entries",
+                        "extraDetail1": "optionalDetailForSkillAdapterToReferenceThisDevice",
+                        "extraDetail4": "This is not a suitable place to maintain current device state"
+                    },
+                    "version": "your software version number here.",
+                    "manufacturerName": "yourManufacturerName",
+                    "friendlyName": "Todesstern",
+                    "actions": [
+                        "turnOn",
+                        "turnOff"
+                        ],
+                    "applianceId": "device001",
+                    "isReachable": true
+                    }
+                ]
+            }
+        }""".trimMargin()
     }
 }
 

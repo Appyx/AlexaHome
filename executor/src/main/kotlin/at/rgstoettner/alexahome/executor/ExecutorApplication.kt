@@ -58,9 +58,11 @@ class Runner : CommandLineRunner {
             }
         }
 
-        val manager = WebSocketConnectionManager(client, handler, "wss://localhost:8443/wss")
-        manager.start()
+        val port = ClassPathResource("tls/port.txt").inputStream.bufferedReader(Charsets.UTF_8).readText()
+        val host = ClassPathResource("tls/host.txt").inputStream.bufferedReader(Charsets.UTF_8).readText()
 
+        val manager = WebSocketConnectionManager(client, handler, "wss://$host:$port/wss")
+        manager.start()
 
         while (true) {
         }

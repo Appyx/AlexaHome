@@ -62,7 +62,7 @@ class InstallController {
     fun addUser() {
         if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
 
-        "Enter the Amazon Developer Account".println()
+        "Enter the Amazon Developer Account: [bob@something.com]".println()
         val account = requiredReadLine()
         if (File("AlexaHome/lambda/tls/users/$account").exists()) handleFatalError(CliError.USER_ALREADY_EXISTS)
         "Enter the password for the Certificate Authority:".println()
@@ -70,13 +70,17 @@ class InstallController {
         "Enter a password for the user keys: (optional)".println()
         var tlsPass = safeReadLine()
         if (tlsPass.isEmpty()) tlsPass = UUID.randomUUID().toString()
-        "Enter the local ip of the server:".println()
-        val tlsLocalIP = requiredReadLine()
-        "Enter the remote domain:".println()
-        val tlsDomain = requiredReadLine()
+        "Enter the local ip and the local port of the server: [X.X.X.X:YYYY]".println()
+        val local = requiredReadLine()
+        val localIP = local.split(":")[0]
+        val localPort = local.split(":")[1]
+        "Enter the remote domain and the remote port of the server: [yourdomain.com:YYYY]".println()
+        val remote = requiredReadLine()
+        val remoteDomain = remote.split(":")[0]
+        val remotePort = remote.split(":")[1]
 
         "Creating tls configuration...".println()
-        "cd AlexaHome/tls && ./gen_user.sh $tlsPass $tlsLocalIP $tlsDomain $rootPass $account".runCommand()
+        "cd AlexaHome/tls && ./gen_user.sh $tlsPass $localIP $remoteDomain $rootPass $account".runCommand()
         if (log.contains("exception", true) || log.contains("error", true)) {
             "rm -rf AlexaHome/tls/server AlexaHome/tls/client".runCommand(false)
             handleFatalError(CliError.TLS_CONFIG_FAILED)
@@ -86,7 +90,8 @@ class InstallController {
         File("AlexaHome/tls/client/client-cert.pem").copyTo(File("AlexaHome/lambda/tls/users/$account/client-cert.pem"), true)
         File("AlexaHome/tls/client/client-key.pem").copyTo(File("AlexaHome/lambda/tls/users/$account/client-key.pem"), true)
         File("AlexaHome/lambda/tls/users/$account/pass.txt").writeText(tlsPass, Charsets.UTF_8)
-        File("AlexaHome/lambda/tls/users/$account/host.txt").writeText(tlsDomain, Charsets.UTF_8)
+        File("AlexaHome/lambda/tls/users/$account/host.txt").writeText(remoteDomain, Charsets.UTF_8)
+        File("AlexaHome/lambda/tls/users/$account/port.txt").writeText(remotePort, Charsets.UTF_8)
         "cd AlexaHome/lambda && zip -r lambda.zip index.js tls".runCommand()
         File("AlexaHome/lambda/lambda.zip").copyTo(File("lambda.zip"), true)
 
@@ -95,7 +100,9 @@ class InstallController {
         "Building executor...".println()
         File("AlexaHome/tls/client/client-keystore.jks").copyTo(File("AlexaHome/executor/src/main/resources/tls/client-keystore.jks"), true)
         File("AlexaHome/tls/client/client-truststore.jks").copyTo(File("AlexaHome/executor/src/main/resources/tls/client-truststore.jks"), true)
-        File("AlexaHome/executor/src/main/resources/tls/pass.txt").writeText(tlsPass, Charsets.UTF_8);
+        File("AlexaHome/executor/src/main/resources/tls/pass.txt").writeText(tlsPass, Charsets.UTF_8)
+        File("AlexaHome/executor/src/main/resources/tls/host.txt").writeText(localIP, Charsets.UTF_8)
+        File("AlexaHome/executor/src/main/resources/tls/port.txt").writeText(localPort, Charsets.UTF_8)
         "cd AlexaHome/executor && gradle build".runCommand()
         "cp AlexaHome/executor/build/libs/executor* $account".runCommand()
 
@@ -105,7 +112,9 @@ class InstallController {
         File("AlexaHome/skill/src/main/resources/tls/tls.properties").writeText(
                 "server.ssl.trust-store-password=$tlsPass\n" +
                         "server.ssl.key-store-password=$tlsPass\n" +
-                        "server.ssl.key-password=$tlsPass", Charsets.UTF_8)
+                        "server.ssl.key-password=$tlsPass\n" +
+                        "server.port=$localPort"
+                , Charsets.UTF_8)
         "cd AlexaHome/skill && gradle build".runCommand()
         "cp AlexaHome/skill/build/libs/skill* $account".runCommand()
 

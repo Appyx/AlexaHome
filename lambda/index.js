@@ -18,7 +18,6 @@ exports.handler = function (event, context, callback) {
     var req = https.request(options, function (res) {
         res.on('data', function (data) {
             var account=JSON.parse(data);
-            console.log("profile response");
             console.log(JSON.stringify(account));
             redirect(account.email,event,callback);
         });
@@ -32,12 +31,13 @@ function redirect(user,data,callback){
         var cert=fs.readFileSync("tls/users/"+user+"/client-cert.pem");
         var pass=fs.readFileSync("tls/users/"+user+"/pass.txt","UTF-8");
         var host=fs.readFileSync("tls/users/"+user+"/host.txt","UTF-8");
+        var port=fs.readFileSync("tls/users/"+user+"/port.txt","UTF-8");
         
         console.log("redirecting to host: "+host);
         
         var options = {
             hostname: host,
-            port: 8443,
+            port: port,
             path: '/',
             method: 'POST',
             ca: fs.readFileSync("tls/ca.crt"),
@@ -51,6 +51,7 @@ function redirect(user,data,callback){
         
         var req = https.request(options, function (res) {
             res.on('data', function (data) {
+                console.log(JSON.stringify(JSON.parse(data)));
                 callback(null,JSON.parse(data));
             });
         });

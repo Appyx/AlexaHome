@@ -15,6 +15,7 @@ class CliParser {
                 when {
                     args[1] == "device" -> AddController().addDevice()
                     args[1] == "scence" -> AddController().addScene()
+                    args[1] == "user" -> InstallController().addUser()
                     else -> handleFatalError(CliError.UNKNOWN_ARGUMENTS)
                 }
             }

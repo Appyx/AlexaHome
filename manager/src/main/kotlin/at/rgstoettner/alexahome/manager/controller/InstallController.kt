@@ -1,9 +1,6 @@
 package at.rgstoettner.alexahome.manager.controller
 
-import at.rgstoettner.alexahome.manager.CliError
-import at.rgstoettner.alexahome.manager.handleFatalError
-import at.rgstoettner.alexahome.manager.println
-import at.rgstoettner.alexahome.manager.safeReadLine
+import at.rgstoettner.alexahome.manager.*
 import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -16,16 +13,32 @@ class InstallController {
     private val tlsDir = File("tls_gen")
 
     fun install() {
-        try {
-            tryInstall()
-            "Components successfully installed!".println()
-        } catch (ex: Throwable) {
-            ("An error occurred! - Cleaning up...").println()
-            reset(CliError.INSTALLATION_FAILED)
-        } finally {
-            tlsDir.deleteRecursively()
-            projectDir.deleteRecursively()
-        }
+        "Fetching project...".println()
+        "git clone $git".runCommand()
+
+        "The Manager will install a Certificate Authority to sign server and client.".println()
+        "Please provide a password you will need it to add users in the future:".println()
+        val pass = requiredReadLine()
+        "Genrating Certificate Authority..".println()
+        File("/AlexaHome/tls/openssl.cnf").copyTo(File("CA/openssl.cnf"))
+        File("/AlexaHome/tls/gen_ca.sh").copyTo(File("CA/gen_ca.sh"))
+        "cd CA && ./gen_ca.sh $pass".runCommand()
+
+
+//        try {
+//            tryInstall()
+//            "Components successfully installed!".println()
+//        } catch (ex: Throwable) {
+//            ("An error occurred! - Cleaning up...").println()
+//            reset(CliError.INSTALLATION_FAILED)
+//        } finally {
+//            tlsDir.deleteRecursively()
+//            projectDir.deleteRecursively()
+//        }
+    }
+
+    fun addUser() {
+
     }
 
     fun tryInstall() {

@@ -13,6 +13,10 @@ class CliParser {
         InstallController().uninstall()
     }
 
+    fun update() {
+        InstallController().update()
+    }
+
     fun add(args: List<String>) {
         when {
             args.size == 2 -> {

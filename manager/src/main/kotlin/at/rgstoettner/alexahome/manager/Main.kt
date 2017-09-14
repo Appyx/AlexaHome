@@ -19,6 +19,7 @@ fun main(args: Array<String>) {
 
             * install                   - Installs the base components to work with other commands
             * uninstall                 - Uninstalls the base components
+            * update                    - Installs new base components and keeps the current configuration
             * add device                - Adds a device
             * add scene                 - Adds a scene
             * add user                  - Adds a user
@@ -48,6 +49,7 @@ fun main(args: Array<String>) {
     when {
         parts[0] == "install" -> CliParser().install()
         parts[0] == "uninstall" -> CliParser().uninstall()
+        parts[0] == "update" -> CliParser().update()
         parts[0] == "add" -> CliParser().add(parts)
         parts[0] == "wipe" -> CliParser().wipe(parts)
         parts[0] == "list" -> CliParser().list(parts)

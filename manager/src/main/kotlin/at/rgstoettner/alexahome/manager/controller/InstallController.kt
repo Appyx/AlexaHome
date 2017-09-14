@@ -80,6 +80,7 @@ class InstallController {
         val remotePort = remote.split(":")[1]
 
         "Creating tls configuration...".println()
+        "chmod +x AlexaHome/tls/gen_user.sh".runCommand()
         "cd AlexaHome/tls && ./gen_user.sh $tlsPass $localIP $remoteDomain $rootPass $account".runCommand()
         if (log.contains("exception", true) || log.contains("error", true)) {
             "rm -rf AlexaHome/tls/server AlexaHome/tls/client".runCommand(false)
@@ -153,5 +154,35 @@ class InstallController {
             log = log.plus(text)
             println(text)
         }
+    }
+
+    fun update() {
+        if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
+        try {
+            "Backing up base components...".println()
+            File("AlexaHome/lambda/tls").copyRecursively(File("update_temp/lambda/tls"), true)
+            File("AlexaHome/skill/src/main/resources/tls").copyRecursively(File("update_temp/skill/tls"), true)
+            File("AlexaHome/tls").copyRecursively(File("update_temp/general/tls"), true)
+            File("AlexaHome/executor/src/main/resources/tls").copyRecursively(File("update_temp/executor/tls"), true)
+            File("AlexaHome").deleteRecursively()
+
+            "Fetching project...".println()
+            "git clone $git".runCommand()
+            "chmod 700 AlexaHome".runCommand()
+
+            "Restoring base components...".println()
+            File("update_temp/lambda/tls").copyRecursively(File("AlexaHome/lambda/tls"), true)
+            File("update_temp/skill/tls").copyRecursively(File("AlexaHome/skill/src/main/resources/tls"), true)
+            File("update_temp/general/tls").copyRecursively(File("AlexaHome/tls"), true)
+            File("update_temp/executor/tls").copyRecursively(File("AlexaHome/executor/src/main/resources/tls"), true)
+        } catch (ex: Throwable) {
+            "Update failed!".println()
+        } finally {
+            val temp = File("update_temp")
+            if (temp.exists()) {
+                temp.deleteRecursively()
+            }
+        }
+        "Update successful!".println()
     }
 }

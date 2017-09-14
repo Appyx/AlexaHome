@@ -13,16 +13,21 @@ class InstallController {
     private val tlsDir = File("tls_gen")
 
     fun install() {
+        "Installing base components:".println()
+
         "Fetching project...".println()
         "git clone $git".runCommand()
 
-        "The Manager will install a Certificate Authority to sign server and client.".println()
-        "Please provide a password you will need it to add users in the future:".println()
+        "Now a Certificate Authority for signing server and client will be installed.".println()
+        "Please provide a password. You will need it to add users later.".println()
         val pass = requiredReadLine()
         "Genrating Certificate Authority..".println()
-        File("/AlexaHome/tls/openssl.cnf").copyTo(File("CA/openssl.cnf"))
-        File("/AlexaHome/tls/gen_ca.sh").copyTo(File("CA/gen_ca.sh"))
-        "cd CA && ./gen_ca.sh $pass".runCommand()
+        "chmod +x AlexaHome/tls/gen_ca.sh".runCommand()
+        "./gen_ca.sh $pass".runCommand()
+
+        File("AlexaHome/tls/certs/ca.crt").copyTo(File("AlexaHome/lambda/tls/ca.crt"), true)
+
+        "Successfully installed the base components!".println()
 
 
 //        try {
@@ -37,8 +42,21 @@ class InstallController {
 //        }
     }
 
-    fun addUser() {
+    fun uninstall() {
+        "You will no longer be able to add users.".println()
+        "Are you sure to remove the Certificate Authority? [yes/no]".println()
+        val answer = requiredReadLine()
+        if (answer == "yes") {
+            "rm -rf AlexaHome".runCommand(false)
+            "Removed git".println()
+            "rm -rf CA".runCommand(false)
+            "Removed Certificate Authority".println()
+        } else {
+            "Canceled.".println()
+        }
+    }
 
+    fun addUser() {
     }
 
     fun tryInstall() {
@@ -96,7 +114,7 @@ class InstallController {
 
     fun clear(silent: Boolean = false) {
         "rm -rf AlexaHome".runCommand(false)
-        if (!silent) "Removed project".println()
+        if (!silent) "Removed git".println()
         "rm -rf lambda*".runCommand(false)
         if (!silent) "Removed AWS lambda".println()
         "rm -rf skill*".runCommand(false)

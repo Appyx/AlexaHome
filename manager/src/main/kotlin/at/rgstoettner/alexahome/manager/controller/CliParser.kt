@@ -9,6 +9,10 @@ class CliParser {
         InstallController().install()
     }
 
+    fun uninstall() {
+        InstallController().uninstall()
+    }
+
     fun add(args: List<String>) {
         when {
             args.size == 2 -> {

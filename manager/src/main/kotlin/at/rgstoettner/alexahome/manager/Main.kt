@@ -17,8 +17,9 @@ fun main(args: Array<String>) {
             Here you can manage your Alexa/HomeKit devices.
             The following commands are available:
 
-            * install                   - Installs the necessary components
-            * clear                     - Removes the installed comonents
+            * install                   - Installs the base components to work with other commands
+            * uninstall                 - Uninstalls the base components
+            * clear                     - Removes all generated content but the base components
             * add device                - Adds a device
             * add scene                 - Adds a scene
             * list                      - List all scenes and devices
@@ -46,6 +47,7 @@ fun main(args: Array<String>) {
     when {
         parts[0] == "clear" -> CliParser().clear()
         parts[0] == "install" -> CliParser().install()
+        parts[0] == "uninstall" -> CliParser().uninstall()
         parts[0] == "add" -> CliParser().add(parts)
         parts[0] == "wipe" -> CliParser().wipe(parts)
         parts[0] == "list" -> CliParser().list(parts)

@@ -86,7 +86,7 @@ class InstallController {
         File("AlexaHome/tls/client/client-cert.pem").copyTo(File("AlexaHome/lambda/tls/users/$account/client-cert.pem"), true)
         File("AlexaHome/tls/client/client-key.pem").copyTo(File("AlexaHome/lambda/tls/users/$account/client-key.pem"), true)
         File("AlexaHome/lambda/tls/users/$account/pass.txt").writeText(tlsPass, Charsets.UTF_8)
-        File("AlexaHome/lambda/tls/users/$account/domain.txt").writeText(tlsDomain, Charsets.UTF_8)
+        File("AlexaHome/lambda/tls/users/$account/host.txt").writeText(tlsDomain, Charsets.UTF_8)
         "cd AlexaHome/lambda && zip -r lambda.zip index.js tls".runCommand()
         File("AlexaHome/lambda/lambda.zip").copyTo(File("lambda.zip"), true)
 

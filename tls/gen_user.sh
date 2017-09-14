@@ -19,8 +19,6 @@ if [ -z "$5" ]; then
 	exit
 fi
 
-
-
 mkdir server
 
 CA_ALIAS=ca-root
@@ -57,7 +55,7 @@ PREFIX=client
 ALIAS=client-key
 
 echo "create key for client"
-keytool -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -genkey -alias $ALIAS -keypass $1 -keyalg RSA -keysize 2048 -validity 3650 -dname "CN=client,O=AlexaHome,OU=$5"
+keytool -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -genkey -alias $ALIAS -keypass $1 -keyalg RSA -keysize 2048 -validity 3650 -dname "CN=client,O=AlexaHome,OU=$3"
 
 echo "create csr to get a cert"
 keytool -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -certreq -alias $ALIAS -file $DIR/$PREFIX.csr

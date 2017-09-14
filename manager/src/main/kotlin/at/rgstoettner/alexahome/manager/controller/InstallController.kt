@@ -73,10 +73,10 @@ class InstallController {
         "Enter the local ip of the server:".println()
         val tlsLocalIP = requiredReadLine()
         "Enter the remote domain:".println()
-        val tlsRemoteDomain = requiredReadLine()
+        val tlsDomain = requiredReadLine()
 
         "Creating tls configuration...".println()
-        "cd AlexaHome/tls && ./gen_user.sh $tlsPass $tlsLocalIP $tlsRemoteDomain $rootPass $account".runCommand()
+        "cd AlexaHome/tls && ./gen_user.sh $tlsPass $tlsLocalIP $tlsDomain $rootPass $account".runCommand()
         if (log.contains("exception", true) || log.contains("error", true)) {
             "rm -rf AlexaHome/tls/server AlexaHome/tls/client".runCommand(false)
             handleFatalError(CliError.TLS_CONFIG_FAILED)
@@ -86,6 +86,7 @@ class InstallController {
         File("AlexaHome/tls/client/client-cert.pem").copyTo(File("AlexaHome/lambda/tls/users/$account/client-cert.pem"), true)
         File("AlexaHome/tls/client/client-key.pem").copyTo(File("AlexaHome/lambda/tls/users/$account/client-key.pem"), true)
         File("AlexaHome/lambda/tls/users/$account/pass.txt").writeText(tlsPass, Charsets.UTF_8)
+        File("AlexaHome/lambda/tls/users/$account/domain.txt").writeText(tlsDomain, Charsets.UTF_8)
         "cd AlexaHome/lambda && zip -r lambda.zip index.js tls".runCommand()
         File("AlexaHome/lambda/lambda.zip").copyTo(File("lambda.zip"), true)
 

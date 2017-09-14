@@ -38,13 +38,13 @@ openssl ca -batch -config openssl.cnf -passin pass:$4 -policy policy_match -out 
 rm $DIR/$PREFIX.csr
 
 echo "import the ca into the keystore to create ca chain"
-keytool -import -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -file CA/certs/ca.crt -alias theCARoot -noprompt
+keytool -import -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -file certs/ca.crt -alias theCARoot -noprompt
 
 echo "import the signed cert into the keystore"
 keytool -import -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -file $DIR/$PREFIX.crt -alias $ALIAS -noprompt
 
 echo "import ca into server truststore"
-keytool -import -keystore $DIR/$PREFIX-truststore.jks -storepass $1 -file CA/certs/ca.crt -alias $CA_ALIAS -noprompt
+keytool -import -keystore $DIR/$PREFIX-truststore.jks -storepass $1 -file certs/ca.crt -alias $CA_ALIAS -noprompt
 
 mkdir client
 
@@ -63,13 +63,13 @@ openssl ca -batch -config openssl.cnf -passin pass:$4 -policy policy_match -out 
 rm $DIR/$PREFIX.csr
 
 echo "import the ca into the keystore to create ca chain"
-keytool -import -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -file CA/certs/ca.crt -alias $CA_ALIAS -noprompt
+keytool -import -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -file certs/ca.crt -alias $CA_ALIAS -noprompt
 
 echo "import the signed cert into the keystore"
 keytool -import -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -file $DIR/$PREFIX.crt -alias $ALIAS -noprompt
 
 echo "import ca into client truststore"
-keytool -import -keystore $DIR/$PREFIX-truststore.jks -storepass $1 -file CA/certs/ca.crt -alias $CA_ALIAS -noprompt
+keytool -import -keystore $DIR/$PREFIX-truststore.jks -storepass $1 -file certs/ca.crt -alias $CA_ALIAS -noprompt
 
 echo "convert client keystore to pkcs12"
 keytool -importkeystore -srckeystore $DIR/$PREFIX-keystore.jks -srcstorepass $1 -destkeystore $DIR/$PREFIX-keystore.p12 -deststorepass $1 -deststoretype PKCS12
@@ -77,4 +77,4 @@ keytool -importkeystore -srckeystore $DIR/$PREFIX-keystore.jks -srcstorepass $1 
 echo "export key and cert as pkcs12"
 openssl pkcs12 -in $DIR/$PREFIX-keystore.p12 -nokeys -out $DIR/$PREFIX-cert.pem -passin pass:$1
 openssl pkcs12 -in $DIR/$PREFIX-keystore.p12 -nocerts -out $DIR/$PREFIX-key.pem -passin pass:$1 -passout pass:$1
-cp CA/certs/ca.crt $DIR
+cp certs/ca.crt $DIR

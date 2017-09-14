@@ -31,7 +31,7 @@ function redirect(user,data,callback){
         var key=fs.readFileSync("tls/users/"+user+"/client-key.pem");
         var cert=fs.readFileSync("tls/users/"+user+"/client-cert.pem");
         var pass=fs.readFileSync("tls/users/"+user+"/pass.txt","UTF-8");
-        var host=fs.readFileSync("tls/users/"+user+"/pass.txt","UTF-8");
+        var host=fs.readFileSync("tls/users/"+user+"/host.txt","UTF-8");
         
         console.log("redirecting to host: "+host);
         
@@ -51,13 +51,13 @@ function redirect(user,data,callback){
         
         var req = https.request(options, function (res) {
             res.on('data', function (data) {
-                callback(null,data);
+                callback(null,JSON.parse(data));
             });
         });
         req.write(JSON.stringify(data));
         req.end();
     }else{
-        console.log("no host foun for user: "+user);
+        console.log("no host found for user: "+user);
         callback(null);
     }
 }

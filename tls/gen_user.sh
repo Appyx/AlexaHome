@@ -75,7 +75,7 @@ echo "import ca into client truststore"
 keytool -import -keystore $DIR/$PREFIX-truststore.jks -storepass $1 -file certs/ca.crt -alias $CA_ALIAS -noprompt
 
 echo "convert client keystore to pkcs12"
-keytool -importkeystore -srckeystore $DIR/$PREFIX-keystore.jks -srcstorepass $1 -destkeystore $DIR/$PREFIX-keystore.p12 -deststorepass $1 -deststoretype PKCS12
+keytool -importkeystore -srckeystore $DIR/$PREFIX-keystore.jks -srcstorepass $1 -destkeystore $DIR/$PREFIX-keystore.p12 -deststorepass $1 -deststoretype PKCS12 -srcalias $ALIAS
 
 echo "export key and cert as pkcs12"
 openssl pkcs12 -in $DIR/$PREFIX-keystore.p12 -nokeys -out $DIR/$PREFIX-cert.pem -passin pass:$1

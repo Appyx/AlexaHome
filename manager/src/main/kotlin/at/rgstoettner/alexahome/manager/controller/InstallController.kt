@@ -108,7 +108,7 @@ class InstallController {
         "cd AlexaHome/skill && gradle build".runCommand()
         "cp AlexaHome/skill/build/libs/skill* $account".runCommand()
 
-        "rm -rf server client".runCommand(false)
+        "rm -rf AlexaHome/tls/server AlexaHome/tls/client".runCommand(false)
         "Successfully created user!".println()
         "Created file: lambda.zip".println()
         "Created directory: $account ".println()

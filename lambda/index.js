@@ -7,10 +7,10 @@ exports.handler = function (request, context) {
         port: 8443,
         path: '/',
         method: 'POST',
-        ca: fs.readFileSync("tls/server-cert.pem"),
-        key: fs.readFileSync("tls/client-key.pem"),
-        cert: fs.readFileSync("tls/client-cert.pem"),
-        passphrase: fs.readFileSync("tls/pass.txt","UTF-8"),
+        ca: fs.readFileSync("tls/ca.pem"),
+        key: fs.readFileSync("tls/users/robert.gstoettner@icloud.com/client-key.pem"),
+        cert: fs.readFileSync("tls/users/robert.gstoettner@icloud.com/client-cert.pem"),
+        passphrase: fs.readFileSync("tls/users/robert.gstoettner@icloud.com/pass.txt","UTF-8"),
         headers: {
             'Content-Type': 'application/json'
         }

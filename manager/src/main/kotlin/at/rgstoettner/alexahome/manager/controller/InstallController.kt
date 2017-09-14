@@ -16,28 +16,25 @@ class InstallController {
 
     fun install() {
         if (isInstalled) handleFatalError(CliError.ALREADY_INSTALLED)
-        try {
-            "Installing base components:".println()
 
-            "Fetching project...".println()
-            "git clone $git".runCommand()
-            "chmod 600 AlexaHome".runCommand()
+        "Installing base components:".println()
 
-            "Now a Certificate Authority for signing server and client will be installed.".println()
-            "Please provide a password. You will need it to add users later.".println()
-            val pass = requiredReadLine {
-                uninstall(true)
-            }
-            "Genrating Certificate Authority..".println()
-            "chmod +x AlexaHome/tls/gen_ca.sh".runCommand()
-            "cd AlexaHome/tls/ && ./gen_ca.sh $pass".runCommand()
+        "Fetching project...".println()
+        "git clone $git".runCommand()
+        "chmod 700 AlexaHome".runCommand()
 
-            File("AlexaHome/tls/certs/ca.crt").copyTo(File("AlexaHome/lambda/tls/ca.crt"), true)
-            File("AlexaHome/tls/users").mkdir()
-            "Successfully installed the base components!".println()
-        } catch (ex: Throwable) {
+        "Now a Certificate Authority for signing server and client will be installed.".println()
+        "Please provide a password. You will need it to add users later.".println()
+        val pass = requiredReadLine {
             uninstall(true)
         }
+        "Genrating Certificate Authority..".println()
+        "chmod +x AlexaHome/tls/gen_ca.sh".runCommand()
+        "cd AlexaHome/tls/ && ./gen_ca.sh $pass".runCommand()
+
+        File("AlexaHome/tls/certs/ca.crt").copyTo(File("AlexaHome/lambda/tls/ca.crt"), true)
+        File("AlexaHome/tls/users").mkdir()
+        "Successfully installed the base components!".println()
     }
 
     fun uninstall(force: Boolean = false) {

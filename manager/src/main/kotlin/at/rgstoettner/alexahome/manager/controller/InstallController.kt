@@ -161,9 +161,7 @@ class InstallController {
         try {
             "Backing up base components...".println()
             File("AlexaHome/lambda/tls").copyRecursively(File("update_temp/lambda/tls"), true)
-            File("AlexaHome/skill/src/main/resources/tls").copyRecursively(File("update_temp/skill/tls"), true)
             File("AlexaHome/tls").copyRecursively(File("update_temp/general/tls"), true)
-            File("AlexaHome/executor/src/main/resources/tls").copyRecursively(File("update_temp/executor/tls"), true)
             File("AlexaHome").deleteRecursively()
 
             "Fetching project...".println()
@@ -172,9 +170,7 @@ class InstallController {
 
             "Restoring base components...".println()
             File("update_temp/lambda/tls").copyRecursively(File("AlexaHome/lambda/tls"), true)
-            File("update_temp/skill/tls").copyRecursively(File("AlexaHome/skill/src/main/resources/tls"), true)
             File("update_temp/general/tls").copyRecursively(File("AlexaHome/tls"), true)
-            File("update_temp/executor/tls").copyRecursively(File("AlexaHome/executor/src/main/resources/tls"), true)
         } catch (ex: Throwable) {
             "Update failed!".println()
         } finally {
@@ -184,5 +180,7 @@ class InstallController {
             }
         }
         "Update successful!".println()
+        "Note: New users will have the updated version. Old users will still use the old version.".println()
+        "Note: If you want to update old users you have to remove and add them again.".println()
     }
 }

@@ -3,6 +3,7 @@
 .gradle
 build/
 src/main/resources/tls/
+config.json
 !gradle/wrapper/gradle-wrapper.jar
 
 ### STS ###

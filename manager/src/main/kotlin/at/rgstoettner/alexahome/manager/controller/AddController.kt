@@ -1,7 +1,7 @@
 package at.rgstoettner.alexahome.manager.controller
 
 import at.rgstoettner.alexahome.manager.*
-import at.rgstoettner.alexahome.manager.data.ExtendedDevice
+import at.rgstoettner.alexahome.manager.data.AlexaHomeDevice
 
 class AddController {
 
@@ -60,14 +60,13 @@ class AddController {
         "$name successfully added. You can now discover the device with Alexa.".println()
 
         val config = loadConfiguration()
-        val device = ExtendedDevice(name, type, commandMap.keys.toList())
-        device.commands = commandMap
+        val device = AlexaHomeDevice(name, type, commandMap)
 
-        if (description.isNotEmpty()) device.friendlyDescription = description
-        if (manufacturer.isNotEmpty()) device.manufacturerName = manufacturer
-        if (model.isNotEmpty()) device.modelName = model
+        if (description.isNotEmpty()) device.setDescription(description)
+        if (manufacturer.isNotEmpty()) device.setManufacturer(manufacturer)
+        if (model.isNotEmpty()) device.setModel(model)
 
-        config.devices.add(device)
+        config.addDevice(device)
         saveConfiguration(config)
     }
 

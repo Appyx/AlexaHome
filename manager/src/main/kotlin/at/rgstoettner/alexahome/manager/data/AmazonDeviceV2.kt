@@ -1,6 +1,6 @@
 package at.rgstoettner.alexahome.manager.data
 
-open class EchoDeviceV2(var friendlyName: String, var applianceTypes: List<String>, var actions: List<String>) {
+open class AmazonDeviceV2(var friendlyName: String, var applianceTypes: List<String>, var actions: List<String>) {
 
     var applianceId = System.currentTimeMillis().toString()
     var friendlyDescription = "no description available"

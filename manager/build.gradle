@@ -27,6 +27,7 @@ compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+
 task fatJar(type: Jar) {
     manifest {
         attributes 'Implementation-Title': 'AlexaHome-manager build',
@@ -36,4 +37,12 @@ task fatJar(type: Jar) {
     baseName = project.name
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
+    ant.java(jar: "${}${libsDir}${File.separator}${archivesBaseName}.jar", fork: true)
+}
+
+task runFatJar(type: JavaExec) {
+    standardInput = System.in
+    dependsOn fatJar
+    classpath = fatJar.outputs.files
+    main = 'at.rgstoettner.alexahome.manager.MainKt'
 }

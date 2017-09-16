@@ -1,63 +1,37 @@
 package at.rgstoettner.alexahome.manager
 
-import at.rgstoettner.alexahome.manager.controller.CliParser
-import at.rgstoettner.alexahome.manager.data.Configuration
-import com.google.gson.Gson
-import java.io.File
 import kotlin.system.exitProcess
 
 
 fun main(args: Array<String>) {
 
-    val parts: List<String>
-    if (args.isEmpty()) {
-        val welcome =
-                """
-            Welcome to the HomeManager.
-            Here you can manage your Alexa/HomeKit devices.
-            The following commands are available:
 
-            * install                   - Installs the base components to work with other commands
-            * uninstall                 - Uninstalls the base components
-            * update                    - Installs new base components and keeps the current configuration
-            * add device                - Adds a device
-            * add scene                 - Adds a scene
-            * add user                  - Adds a user
-            * list                      - List all scenes and devices
-            * list devices              - List all scenes and devices
-            * list scenes               - List all scenes and devices
-            * edit device <id>          - Edit a device
-            * edit scene <id>           - Edit a device
-            * remove device <id>        - Removes a device
-            * remove scene <id>         - Removes a scene
-            * remove user <id>          - Removes a user
-            * wipe                      - Removes everything
+    val settings = Settings.load()
+    val skill = Endpoint.instance.configure(settings) //blocking connect
 
-            Each command starts an assistant which guides you through the process.
+    val app = App(skill)
 
-            Enter a command:
-            """.trimIndent()
-        println(welcome)
-
-        val line = safeReadLine()
-        if (line.isEmpty()) handleFatalError(CliError.NUMBER_OF_ARGUMENTS)
-        parts = line.split(" ")
+    if (settings.user != null) { //not ready to configure devices
+        when (settings.role) {
+            "admin" -> app.handleAdminMode(settings)
+            "user" -> app.handleUserMode(settings)
+        }
     } else {
-        parts = args.toList()
+        app.handleStrangerMode()
     }
 
-    when {
-        parts[0] == "install" -> CliParser().install()
-        parts[0] == "uninstall" -> CliParser().uninstall()
-        parts[0] == "update" -> CliParser().update()
-        parts[0] == "add" -> CliParser().add(parts)
-        parts[0] == "wipe" -> CliParser().wipe(parts)
-        parts[0] == "list" -> CliParser().list(parts)
-        parts[0] == "remove" -> CliParser().remove(parts)
-        parts[0] == "edit" -> CliParser().edit(parts)
-        else -> handleFatalError(CliError.UNKNOWN_ARGUMENTS)
+    var line = ""
+    if (args.isEmpty()) {
+        line = requiredReadLine()
+        line = line.trim()
+    } else {
+        args.forEach { line = line.plus(it).plus(" ") }
+        line=line.trim()
+        println("Argument was: $line")
     }
+    app.execute(line)
 }
+
 
 fun handleFatalError(cause: CliError) {
     println("Error: ${cause.name}")
@@ -83,30 +57,3 @@ fun requiredReadLine(onFatal: (() -> Unit) = {}): String {
 fun String.println() {
     println(this)
 }
-
-
-val gson = Gson()
-
-fun loadConfiguration(): Configuration {
-    var config = Configuration()
-    val file = getConfigFile()
-    if (file.exists()) {
-        file.bufferedReader().use {
-            config = gson.fromJson(it.readText(), Configuration::class.java)
-        }
-    }
-    return config
-}
-
-fun saveConfiguration(config: Configuration) {
-    val json = gson.toJson(config)
-    getConfigFile().bufferedWriter().use { out ->
-        out.write(json)
-    }
-}
-
-fun getConfigFile(): File {
-    return File(configPath)
-}
-
-var configPath = "config.json"

@@ -3,9 +3,8 @@ package at.rgstoettner.alexahome.manager.controller
 import at.rgstoettner.alexahome.manager.*
 import at.rgstoettner.alexahome.manager.data.AlexaHomeDevice
 
-class AddController {
-
-    fun addDevice() {
+class DeviceController {
+    fun add() {
         "Enter a unique name for the device: ".println()
         val name = requiredReadLine()
 
@@ -59,7 +58,7 @@ class AddController {
 
         "$name successfully added. You can now discover the device with Alexa.".println()
 
-        val config = loadConfiguration()
+        val config = Endpoint.instance.readConfig()
         val device = AlexaHomeDevice(name, type, commandMap)
 
         if (description.isNotEmpty()) device.setDescription(description)
@@ -67,11 +66,22 @@ class AddController {
         if (model.isNotEmpty()) device.setModel(model)
 
         config.addDevice(device)
-        saveConfiguration(config)
+        Endpoint.instance.writeConfig(config)
     }
 
+    fun list() {
+        handleFatalError(CliError.NOT_IMPLEMENTED)
+    }
 
-    fun addScene() {
+    fun edit() {
+        handleFatalError(CliError.NOT_IMPLEMENTED)
+    }
 
+    fun remove() {
+        handleFatalError(CliError.NOT_IMPLEMENTED)
+    }
+
+    fun wipe() {
+        handleFatalError(CliError.NOT_IMPLEMENTED)
     }
 }

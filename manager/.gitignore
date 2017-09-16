@@ -1,5 +1,8 @@
 
 
+src/main/resources/settings/
+src/main/resources/tls/
+
 out/
 .DS_Store
 .gradle

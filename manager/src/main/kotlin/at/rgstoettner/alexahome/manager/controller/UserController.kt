@@ -6,6 +6,12 @@ import java.util.*
 
 class UserController : CommandController() {
 
+    fun add() {
+        if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
+        "Enter the Amazon Developer Account: [bob@something.com]".println()
+        val account = requiredReadLine()
+        addUser(account)
+    }
 
     /**
      * Adds a new user:
@@ -16,11 +22,7 @@ class UserController : CommandController() {
      * 4. copy truststore/keystore to skill and build it
      * 5. create zip package of executor and skill
      */
-    fun add() {
-        if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
-
-        "Enter the Amazon Developer Account: [bob@something.com]".println()
-        val account = requiredReadLine()
+    fun addUser(account: String) {
         if (File("AlexaHome/lambda/tls/users/$account").exists()) handleFatalError(CliError.USER_ALREADY_EXISTS)
         "Enter the password for the Certificate Authority:".println()
         val rootPass = requiredReadLine()
@@ -81,7 +83,7 @@ class UserController : CommandController() {
         home.tls.client.deleteRecursively()
 
         "zip $account.zip *".runCommandInside(userTemp)
-        userTemp.file("$account.zip").override(root)
+        userTemp.file("$account.zip").override(root.file("$account.zip"))
         userTemp.deleteRecursively()
 
         if (logContainsError()) {
@@ -94,28 +96,58 @@ class UserController : CommandController() {
     }
 
     fun list() {
-        handleFatalError(CliError.NOT_IMPLEMENTED)
+        if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
+
+        if (home.lambda.tls.users.exists()) {
+            val walk = home.lambda.tls.users.walkTopDown()
+            val users = walk
+                    .maxDepth(1)
+                    .asSequence()
+                    .filter { it.isDirectory }
+                    .map { it.name }
+                    .toList()
+
+            if (users.isNotEmpty()) {
+                "The following users are currently registered:".println()
+                users.forEach {
+                    "* %-20s".format(it).println()
+                }
+            } else {
+                "No users are registered.".println()
+            }
+        } else {
+            "No users are registered.".println()
+        }
+    }
+
+    fun edit() {
+        if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
+        "Enter the account: [bob@example.com]".println()
+        val account = requiredReadLine()
+        if (!File("AlexaHome/lambda/tls/users/$account").exists()) handleFatalError(CliError.UNKNOWN_USER)
+        removeUser(account)
+        addUser(account)
     }
 
     fun remove() {
+        if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
         "Enter the account: [bob@example.com]".println()
         val account = requiredReadLine()
-        if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
         removeUser(account)
     }
 
     /**
      * Removes the user folder from the lambda and creates a new zip
      */
-    private fun removeUser(account: String) {
+    private fun removeUser(account: String, silent: Boolean = false) {
         val file = File("${home.lambda.tls.users}/$account")
         if (file.exists()) {
             file.deleteRecursively()
-            "Successfully removed user $account!".println()
+            if (!silent) "Successfully removed user $account!".println()
             if (home.lambda.tls.users.walkTopDown().count() != 0) { //if directory is empty
-                "zip -r lambda.zip index.js tls".runCommandInside(home.lambda)
+                "zip -r lambda.zip index.js tls".runCommandInside(home.lambda, !silent)
                 home.lambda.file("lambda.zip").override(File("lambda.zip"))
-                "Created dir: lambda.zip".println()
+                if (!silent) "Created dir: lambda.zip".println()
             }
         } else {
             handleFatalError(CliError.UNKNOWN_USER)

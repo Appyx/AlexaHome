@@ -4,20 +4,17 @@ import kotlin.system.exitProcess
 
 
 fun main(args: Array<String>) {
-
-
+    val app = App()
     val settings = Settings.load()
-    val skill = Endpoint.instance.configure(settings) //blocking connect
-
-
-    val app = App(skill)
 
     if (settings.user != null) { //not ready to configure devices
         when (settings.role) {
             "admin" -> {
+                Endpoint.instance.configure(settings) //blocking connect
                 app.handleAdminMode(settings)
             }
             "user" -> {
+                Endpoint.instance.configure(settings) //blocking connect
                 app.handleUserMode(settings)
             }
         }

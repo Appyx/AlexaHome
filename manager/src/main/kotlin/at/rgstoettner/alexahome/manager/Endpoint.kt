@@ -12,8 +12,8 @@ class Endpoint private constructor() {
         val instance: Endpoint by lazy { Holder.INSTANCE }
     }
 
-    val host: String
-    val port: Int
+    var host: String
+    var port: Int
 
     init {
         host = ""
@@ -21,7 +21,8 @@ class Endpoint private constructor() {
     }
 
     fun configure(settings: Settings): Endpoint {
-
+        host=settings.remoteDomain!!
+        port=settings.remotePort!!
         return instance
     }
 

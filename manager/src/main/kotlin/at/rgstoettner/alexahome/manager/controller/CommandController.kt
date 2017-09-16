@@ -1,12 +1,13 @@
 package at.rgstoettner.alexahome.manager.controller
 
+import com.google.gson.Gson
 import java.io.File
 import java.util.concurrent.TimeUnit
 
 abstract class CommandController {
     protected var log = ""
         private set
-
+    protected val gson = Gson()
     protected val isInstalled = home.tls.private.file("ca.key").exists()
 
     protected object home : Directory("AlexaHome") {
@@ -48,6 +49,7 @@ abstract class CommandController {
                 object tls : Directory("AlexaHome/manager/src/main/resources/tls") {
                 }
             }
+
             object buildLibs : Directory("AlexaHome/manager/build/libs")
         }
     }

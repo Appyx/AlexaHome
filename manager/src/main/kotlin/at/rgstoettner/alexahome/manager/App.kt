@@ -2,9 +2,10 @@ package at.rgstoettner.alexahome.manager
 
 import at.rgstoettner.alexahome.manager.controller.DeviceController
 import at.rgstoettner.alexahome.manager.controller.InstallController
+import at.rgstoettner.alexahome.manager.controller.OtherController
 import at.rgstoettner.alexahome.manager.controller.UserController
 
-class App(val skill: Endpoint) {
+class App() {
 
     private val policy = mutableListOf<Triple<String, String, () -> Unit>>()
 
@@ -70,7 +71,7 @@ class App(val skill: Endpoint) {
         b.appendln("Welcome to the HomeManager (Admin-Mode).")
         b.appendln()
         b.appendln("Hello ${settings.user}!")
-        b.appendln("You are logged in to your personal skill at ${skill.host}:${skill.port}")
+        b.appendln("You are logged in to your personal skill at ${Endpoint.instance.host}:${Endpoint.instance.port}")
         b.appendln()
         b.appendln("Here you can manage your users/devices.")
         b.appendln("The following commands are available:")
@@ -101,7 +102,7 @@ class App(val skill: Endpoint) {
         b.appendln("Welcome to the HomeManager (User-Mode).")
         b.appendln()
         b.appendln("Hello ${settings.user}!")
-        b.appendln("You are logged in to your personal skill at ${skill.host}:${skill.port}")
+        b.appendln("You are logged in to your personal skill at ${Endpoint.instance.host}:${Endpoint.instance.port}")
         b.appendln()
         b.appendln("Here you can manage your devices.")
         b.appendln("The following commands are available:")

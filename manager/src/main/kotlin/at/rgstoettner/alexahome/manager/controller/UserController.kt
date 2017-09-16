@@ -1,13 +1,10 @@
 package at.rgstoettner.alexahome.manager.controller
 
 import at.rgstoettner.alexahome.manager.*
-import com.google.gson.Gson
 import java.io.File
 import java.util.*
 
 class UserController : CommandController() {
-
-    private val gson = Gson()
 
     fun add() {
         if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
@@ -101,9 +98,9 @@ class UserController : CommandController() {
         home.manager.srcMainRes.file("settings.json").writeText(gson.toJson(s))
         "gradle fatJar".runCommandInside(home.manager)
         if (s.role == "admin") {
-            "yes | cp -f ${home.manager.buildLibs}/manager* ${root}"
+            "yes | cp -f ${home.manager.buildLibs}/manager* ${root}".runCommand()
         } else {
-            "cp ${home.manager.buildLibs}/manager* ${userTemp}"
+            "cp ${home.manager.buildLibs}/manager* ${userTemp}".runCommand()
         }
 
         home.tls.server.deleteRecursively()
@@ -114,7 +111,7 @@ class UserController : CommandController() {
         userTemp.deleteRecursively()
 
         if (logContainsError()) {
-            removeUser(account,silent = true)
+            removeUser(account, silent = true)
             handleFatalError(CliError.BUILD_FAILED)
         }
         "Successfully created user!".println()

@@ -82,7 +82,7 @@ class UserController : CommandController() {
         home.executor.srcMainRes.tls.file("pass.txt").writeText(tlsPass, Charsets.UTF_8)
         home.executor.srcMainRes.tls.file("host.txt").writeText(localIP, Charsets.UTF_8)
         home.executor.srcMainRes.tls.file("port.txt").writeText(localPort.toString(), Charsets.UTF_8)
-        "gradle build".runCommandInside(home.executor,false)
+        "gradle build".runCommandInside(home.executor, false)
         "cp ${home.executor.buildLibs}/executor* ${userTemp}".runCommand() //wildcard copy
 
         "Building skill...".println()
@@ -94,14 +94,14 @@ class UserController : CommandController() {
                         "server.ssl.key-password=$tlsPass\n" +
                         "server.port=$localPort"
                 , Charsets.UTF_8)
-        "gradle build".runCommandInside(home.skill)
+        "gradle build".runCommandInside(home.skill, false)
         "cp ${home.skill.buildLibs}/skill* ${userTemp}".runCommand() //wildcard copy
 
         "Building manager...".println()
         home.tls.client.file("client-keystore.jks").override(home.manager.srcMainRes.tls.file("client-keystore.jks"))
         home.tls.client.file("client-truststore.jks").override(home.manager.srcMainRes.tls.file("client-truststore.jks"))
         home.manager.srcMainRes.file("settings.json").writeText(gson.toJson(newSettings))
-        "gradle fatJar".runCommandInside(home.manager,false)
+        "gradle fatJar".runCommandInside(home.manager, false)
         if (newSettings.role == "admin") {
             "yes | cp -f ${home.manager.buildLibs}/manager* ${root}".runCommand()
         } else {

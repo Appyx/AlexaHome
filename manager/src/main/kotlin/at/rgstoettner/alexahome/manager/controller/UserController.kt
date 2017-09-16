@@ -91,8 +91,9 @@ class UserController : CommandController() {
             handleFatalError(CliError.BUILD_FAILED)
         }
         "Successfully created user!".println()
-        "Created dir: lambda.zip".println()
-        "Created directory: $account ".println()
+        println()
+        "Created file: lambda.zip".println()
+        "Created file: $account.zip".println()
     }
 
     fun list() {
@@ -105,6 +106,8 @@ class UserController : CommandController() {
                     .asSequence()
                     .filter { it.isDirectory }
                     .map { it.name }
+                    .filter { it != "users" }
+                    .filter { it.startsWith(".") }
                     .toList()
 
             if (users.isNotEmpty()) {

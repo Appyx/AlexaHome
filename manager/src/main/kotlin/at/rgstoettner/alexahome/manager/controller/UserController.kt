@@ -1,10 +1,13 @@
 package at.rgstoettner.alexahome.manager.controller
 
 import at.rgstoettner.alexahome.manager.*
+import com.google.gson.Gson
 import java.io.File
 import java.util.*
 
 class UserController : CommandController() {
+
+    private val gson = Gson()
 
     fun add() {
         if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
@@ -22,21 +25,27 @@ class UserController : CommandController() {
      * 4. copy truststore/keystore to skill and build it
      * 5. create zip package of executor and skill
      */
-    fun addUser(account: String) {
-        if (File("AlexaHome/lambda/tls/users/$account").exists()) handleFatalError(CliError.USER_ALREADY_EXISTS)
+    private fun addUser(account: String, settings: Settings? = null) {
+        if (File("${home.lambda.tls.users}/$account").exists()) handleFatalError(CliError.USER_ALREADY_EXISTS)
         "Enter the password for the Certificate Authority:".println()
         val rootPass = requiredReadLine()
         "Enter a password for the user keys: (optional)".println()
         var tlsPass = safeReadLine()
         if (tlsPass.isEmpty()) tlsPass = UUID.randomUUID().toString()
-        "Enter the local ip and the local port of the server: [X.X.X.X:YYYY]".println()
+
+        val oldLocal = if (settings != null) "\nPrevious was: ${settings.localIp}:${settings.localPort}" else ""
+        "Enter the local ip and the local port of the server: [X.X.X.X:YYYY]$oldLocal".println()
         val local = requiredReadLine()
         val localIP = local.split(":").getOrElse(0) { handleFatalError(CliError.UNKNOWN_ARGUMENTS);"" }
-        val localPort = local.split(":").getOrElse(0) { handleFatalError(CliError.UNKNOWN_ARGUMENTS);"" }
-        "Enter the remote domain and the remote port of the server: [yourdomain.com:YYYY]".println()
+        val localPort = local.split(":").getOrElse(0) { handleFatalError(CliError.UNKNOWN_ARGUMENTS);"" }.toIntOrNull()
+        if (!(localPort != null && localPort > 0 && localPort <= 65535)) handleFatalError(CliError.ARGUMENTS_NOT_SUPPORTED)
+
+        val oldRemote = if (settings != null) "\nPrevious was: ${settings.remoteDomain}:${settings.remotePort}" else ""
+        "Enter the remote domain and the remote port of the server: [yourdomain.com:YYYY]$oldRemote".println()
         val remote = requiredReadLine()
         val remoteDomain = remote.split(":").getOrElse(1) { handleFatalError(CliError.UNKNOWN_ARGUMENTS); "" }
-        val remotePort = remote.split(":").getOrElse(1) { handleFatalError(CliError.UNKNOWN_ARGUMENTS); "" }
+        val remotePort = remote.split(":").getOrElse(1) { handleFatalError(CliError.UNKNOWN_ARGUMENTS); "" }.toIntOrNull()
+        if (!(remotePort != null && remotePort > 0 && remotePort <= 65535)) handleFatalError(CliError.ARGUMENTS_NOT_SUPPORTED)
 
         "Creating tls configuration...".println()
         "chmod +x ${home.tls.file("gen_user.sh")}".runCommand()
@@ -52,7 +61,7 @@ class UserController : CommandController() {
         home.tls.client.file("client-key.pem").override(File("${home.lambda.tls.users}/$account/client-key.pem"))
         File("${home.lambda.tls.users}/$account/pass.txt").writeText(tlsPass, Charsets.UTF_8)
         File("${home.lambda.tls.users}/$account/host.txt").writeText(remoteDomain, Charsets.UTF_8)
-        File("${home.lambda.tls.users}/$account/port.txt").writeText(remotePort, Charsets.UTF_8)
+        File("${home.lambda.tls.users}/$account/port.txt").writeText(remotePort.toString(), Charsets.UTF_8)
         "zip -r lambda.zip index.js tls".runCommandInside(home.lambda)
         home.lambda.file("lambda.zip").override(File("lambda.zip"))
 
@@ -63,7 +72,7 @@ class UserController : CommandController() {
         home.tls.client.file("client-truststore.jks").override(home.executor.srcMainRes.tls.file("client-truststore.jks"))
         home.executor.srcMainRes.tls.file("pass.txt").writeText(tlsPass, Charsets.UTF_8)
         home.executor.srcMainRes.tls.file("host.txt").writeText(localIP, Charsets.UTF_8)
-        home.executor.srcMainRes.tls.file("port.txt").writeText(localPort, Charsets.UTF_8)
+        home.executor.srcMainRes.tls.file("port.txt").writeText(localPort.toString(), Charsets.UTF_8)
         "gradle build".runCommandInside(home.executor)
         "cp ${home.executor.buildLibs}/executor* ${userTemp}".runCommand() //wildcard copy
 
@@ -81,6 +90,23 @@ class UserController : CommandController() {
 
         home.tls.server.deleteRecursively()
         home.tls.client.deleteRecursively()
+
+        "Building manager...".println()
+        val s = Settings()
+        s.user = account
+        s.role = if (settings != null) settings.role else "user"
+        s.localIp = localIP
+        s.localPort = localPort
+        s.remoteDomain = remoteDomain
+        s.remotePort = remotePort
+        val writer = home.manager.srcMainRes.file("settings.json").writer()
+        gson.toJson(s, writer)
+        "gradle fatJar".runCommandInside(home.manager)
+        if (s.role == "admin") {
+            "yes | cp -f ${home.manager.buildLibs}/manager* ${root}"
+        } else {
+            "cp ${home.manager.buildLibs}/manager* ${userTemp}"
+        }
 
         "zip $account.zip *".runCommandInside(userTemp)
         userTemp.file("$account.zip").override(root.file("$account.zip"))
@@ -107,7 +133,7 @@ class UserController : CommandController() {
                     .filter { it.isDirectory }
                     .map { it.name }
                     .filter { it != "users" }
-                    .filter { it.startsWith(".") }
+                    .filter { !it.startsWith(".") }
                     .toList()
 
             if (users.isNotEmpty()) {
@@ -127,9 +153,11 @@ class UserController : CommandController() {
         if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
         "Enter the account: [bob@example.com]".println()
         val account = requiredReadLine()
-        if (!File("AlexaHome/lambda/tls/users/$account").exists()) handleFatalError(CliError.UNKNOWN_USER)
-        removeUser(account)
-        addUser(account)
+        val accountDir = Directory("${home.lambda.tls.users}/$account")
+        if (!accountDir.exists()) handleFatalError(CliError.UNKNOWN_USER)
+        val settings = Settings.loadFrom(accountDir.file("settings.json"))
+        removeUser(account, silent = true)
+        addUser(account, settings)
     }
 
     fun remove() {

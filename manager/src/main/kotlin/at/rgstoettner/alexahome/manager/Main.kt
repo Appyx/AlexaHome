@@ -9,12 +9,17 @@ fun main(args: Array<String>) {
     val settings = Settings.load()
     val skill = Endpoint.instance.configure(settings) //blocking connect
 
+
     val app = App(skill)
 
     if (settings.user != null) { //not ready to configure devices
         when (settings.role) {
-            "admin" -> app.handleAdminMode(settings)
-            "user" -> app.handleUserMode(settings)
+            "admin" -> {
+                app.handleAdminMode(settings)
+            }
+            "user" -> {
+                app.handleUserMode(settings)
+            }
         }
     } else {
         app.handleStrangerMode()
@@ -26,7 +31,7 @@ fun main(args: Array<String>) {
         line = line.trim()
     } else {
         args.forEach { line = line.plus(it).plus(" ") }
-        line=line.trim()
+        line = line.trim()
         println("Argument was: $line")
     }
     app.execute(line)

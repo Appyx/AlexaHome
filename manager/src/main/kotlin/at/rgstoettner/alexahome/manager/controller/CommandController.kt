@@ -42,6 +42,14 @@ abstract class CommandController {
             object buildLibs : Directory("AlexaHome/skill/build/libs")
 
         }
+
+        object manager : Directory("AlexaHome/manager") {
+            object srcMainRes : Directory("AlexaHome/manager/src/main/resources") {
+                object tls : Directory("AlexaHome/manager/src/main/resources/tls") {
+                }
+            }
+            object buildLibs : Directory("AlexaHome/manager/build/libs")
+        }
     }
 
     protected object updateTemp : Directory("update_temp_dir") {
@@ -60,9 +68,9 @@ abstract class CommandController {
     protected object root : Directory(".")
 
     protected fun String.runCommandInside(inside: Directory, output: Boolean = true) {
-        var str = this
-        str = "cd $inside && $this"
+        val str = "cd $inside && $this"
         str.runCommand(output)
+
     }
 
 
@@ -86,7 +94,7 @@ abstract class CommandController {
     }
 
 
-    abstract class Directory(path: String) : File(path) {
+    open class Directory(path: String) : File(path) {
 
         fun file(name: String): File {
             return File(path.plus("/").plus(name))

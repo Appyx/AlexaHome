@@ -10,7 +10,7 @@ class Settings {
     var remoteDomain: String? = null
     var remotePort: Int? = null
     var localIp: String? = null
-    var localPort: String? = null
+    var localPort: Int? = null
 
 
     companion object {
@@ -30,9 +30,11 @@ class Settings {
             }
         }
 
-        fun save(settings: Settings) {
-            val writer = File("AlexaHome/manager/src/main/resources/settings.json").writer()
-            gson.toJson(settings, writer)
+        fun loadFrom(file: File): Settings? {
+            if (file.exists()) {
+                return gson.fromJson(file.reader(), Settings::class.java)
+            }
+            return null
         }
     }
 }

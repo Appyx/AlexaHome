@@ -64,12 +64,11 @@ class UserController : CommandController() {
 
 
         "Building AWS lambda...".println()
-        home.tls.client.file("client-cert.pem").override(File("${home.lambda.tls.users}/$account/client-cert.pem"))
-        home.tls.client.file("client-key.pem").override(File("${home.lambda.tls.users}/$account/client-key.pem"))
-        File("${home.lambda.tls.users}/$account/pass.txt").writeText(tlsPass, Charsets.UTF_8)
-        File("${home.lambda.tls.users}/$account/host.txt").writeText(remoteDomain, Charsets.UTF_8)
-        File("${home.lambda.tls.users}/$account/port.txt").writeText(remotePort.toString(), Charsets.UTF_8)
-        File("${home.lambda.tls.users}/$account/settings.json").writeText(gson.toJson(newSettings))
+        val userDir = Directory("${home.lambda.tls.users}/$account")
+        home.tls.client.file("client-cert.pem").override(userDir.file("client-cert.pem"))
+        home.tls.client.file("client-key.pem").override(userDir.file("client-key.pem"))
+        userDir.file("pass.txt").writeText(tlsPass, Charsets.UTF_8)
+        userDir.file("settings.json").writeText(gson.toJson(newSettings))
 
         "zip -r lambda.zip index.js tls".runCommandInside(home.lambda)
         home.lambda.file("lambda.zip").override(File("lambda.zip"))
@@ -83,7 +82,7 @@ class UserController : CommandController() {
         home.executor.srcMainRes.tls.file("pass.txt").writeText(tlsPass, Charsets.UTF_8)
         home.executor.srcMainRes.tls.file("host.txt").writeText(localIP, Charsets.UTF_8)
         home.executor.srcMainRes.tls.file("port.txt").writeText(localPort.toString(), Charsets.UTF_8)
-        "gradle build".runCommandInside(home.executor)
+        "gradle build".runCommandInside(home.executor,false)
         "cp ${home.executor.buildLibs}/executor* ${userTemp}".runCommand() //wildcard copy
 
         "Building skill...".println()
@@ -102,7 +101,7 @@ class UserController : CommandController() {
         home.tls.client.file("client-keystore.jks").override(home.manager.srcMainRes.tls.file("client-keystore.jks"))
         home.tls.client.file("client-truststore.jks").override(home.manager.srcMainRes.tls.file("client-truststore.jks"))
         home.manager.srcMainRes.file("settings.json").writeText(gson.toJson(newSettings))
-        "gradle fatJar".runCommandInside(home.manager)
+        "gradle fatJar".runCommandInside(home.manager,false)
         if (newSettings.role == "admin") {
             "yes | cp -f ${home.manager.buildLibs}/manager* ${root}".runCommand()
         } else {

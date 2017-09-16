@@ -37,15 +37,15 @@ class UserController : CommandController() {
         "Enter the local ip and the local port of the server: [X.X.X.X:YYYY]$oldLocal".println()
         val local = requiredReadLine()
         val localIP = local.split(":").getOrElse(0) { handleFatalError(CliError.UNKNOWN_ARGUMENTS);"" }
-        val localPort = local.split(":").getOrElse(0) { handleFatalError(CliError.UNKNOWN_ARGUMENTS);"" }.toIntOrNull()
-        if (!(localPort != null && localPort > 0 && localPort <= 65535)) handleFatalError(CliError.ARGUMENTS_NOT_SUPPORTED)
+        val localPort = local.split(":").getOrElse(1) { handleFatalError(CliError.UNKNOWN_ARGUMENTS);"" }.toIntOrNull()
+        if (localPort == null || localPort <= 1 || localPort > 65535) handleFatalError(CliError.ARGUMENTS_NOT_SUPPORTED)
 
         val oldRemote = if (settings != null) "\nPrevious was: ${settings.remoteDomain}:${settings.remotePort}" else ""
         "Enter the remote domain and the remote port of the server: [yourdomain.com:YYYY]$oldRemote".println()
         val remote = requiredReadLine()
-        val remoteDomain = remote.split(":").getOrElse(1) { handleFatalError(CliError.UNKNOWN_ARGUMENTS); "" }
+        val remoteDomain = remote.split(":").getOrElse(0) { handleFatalError(CliError.UNKNOWN_ARGUMENTS); "" }
         val remotePort = remote.split(":").getOrElse(1) { handleFatalError(CliError.UNKNOWN_ARGUMENTS); "" }.toIntOrNull()
-        if (!(remotePort != null && remotePort > 0 && remotePort <= 65535)) handleFatalError(CliError.ARGUMENTS_NOT_SUPPORTED)
+        if (remotePort == null || remotePort <= 1 || remotePort > 65535) handleFatalError(CliError.ARGUMENTS_NOT_SUPPORTED)
 
         "Creating tls configuration...".println()
         "chmod +x ${home.tls.file("gen_user.sh")}".runCommand()
@@ -88,10 +88,9 @@ class UserController : CommandController() {
         "gradle build".runCommandInside(home.skill)
         "cp ${home.skill.buildLibs}/skill* ${userTemp}".runCommand() //wildcard copy
 
-        home.tls.server.deleteRecursively()
-        home.tls.client.deleteRecursively()
-
         "Building manager...".println()
+        home.tls.client.file("client-keystore.jks").override(home.manager.srcMainRes.tls.file("client-keystore.jks"))
+        home.tls.client.file("client-truststore.jks").override(home.manager.srcMainRes.tls.file("client-truststore.jks"))
         val s = Settings()
         s.user = account
         s.role = if (settings != null) settings.role else "user"
@@ -99,8 +98,7 @@ class UserController : CommandController() {
         s.localPort = localPort
         s.remoteDomain = remoteDomain
         s.remotePort = remotePort
-        val writer = home.manager.srcMainRes.file("settings.json").writer()
-        gson.toJson(s, writer)
+        home.manager.srcMainRes.file("settings.json").writeText(gson.toJson(s))
         "gradle fatJar".runCommandInside(home.manager)
         if (s.role == "admin") {
             "yes | cp -f ${home.manager.buildLibs}/manager* ${root}"
@@ -108,12 +106,15 @@ class UserController : CommandController() {
             "cp ${home.manager.buildLibs}/manager* ${userTemp}"
         }
 
+        home.tls.server.deleteRecursively()
+        home.tls.client.deleteRecursively()
+
         "zip $account.zip *".runCommandInside(userTemp)
         userTemp.file("$account.zip").override(root.file("$account.zip"))
         userTemp.deleteRecursively()
 
         if (logContainsError()) {
-            removeUser(account)
+            removeUser(account,silent = true)
             handleFatalError(CliError.BUILD_FAILED)
         }
         "Successfully created user!".println()

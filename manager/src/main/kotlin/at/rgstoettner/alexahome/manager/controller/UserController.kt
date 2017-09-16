@@ -44,6 +44,15 @@ class UserController : CommandController() {
         val remotePort = remote.split(":").getOrElse(1) { handleFatalError(CliError.UNKNOWN_ARGUMENTS); "" }.toIntOrNull()
         if (remotePort == null || remotePort <= 1 || remotePort > 65535) handleFatalError(CliError.ARGUMENTS_NOT_SUPPORTED)
 
+
+        val newSettings = Settings()
+        newSettings.user = account
+        newSettings.role = if (settings != null) settings.role else "user"
+        newSettings.localIp = localIP
+        newSettings.localPort = localPort
+        newSettings.remoteDomain = remoteDomain
+        newSettings.remotePort = remotePort
+
         "Creating tls configuration...".println()
         "chmod +x ${home.tls.file("gen_user.sh")}".runCommand()
         "./gen_user.sh $tlsPass $localIP $remoteDomain $rootPass $account".runCommandInside(home.tls)
@@ -53,14 +62,18 @@ class UserController : CommandController() {
             handleFatalError(CliError.TLS_CONFIG_FAILED)
         }
 
+
         "Building AWS lambda...".println()
         home.tls.client.file("client-cert.pem").override(File("${home.lambda.tls.users}/$account/client-cert.pem"))
         home.tls.client.file("client-key.pem").override(File("${home.lambda.tls.users}/$account/client-key.pem"))
         File("${home.lambda.tls.users}/$account/pass.txt").writeText(tlsPass, Charsets.UTF_8)
         File("${home.lambda.tls.users}/$account/host.txt").writeText(remoteDomain, Charsets.UTF_8)
         File("${home.lambda.tls.users}/$account/port.txt").writeText(remotePort.toString(), Charsets.UTF_8)
+        File("${home.lambda.tls.users}/$account/settings.json").writeText(gson.toJson(newSettings))
+
         "zip -r lambda.zip index.js tls".runCommandInside(home.lambda)
         home.lambda.file("lambda.zip").override(File("lambda.zip"))
+
 
         userTemp.mkdir()
 
@@ -88,20 +101,14 @@ class UserController : CommandController() {
         "Building manager...".println()
         home.tls.client.file("client-keystore.jks").override(home.manager.srcMainRes.tls.file("client-keystore.jks"))
         home.tls.client.file("client-truststore.jks").override(home.manager.srcMainRes.tls.file("client-truststore.jks"))
-        val s = Settings()
-        s.user = account
-        s.role = if (settings != null) settings.role else "user"
-        s.localIp = localIP
-        s.localPort = localPort
-        s.remoteDomain = remoteDomain
-        s.remotePort = remotePort
-        home.manager.srcMainRes.file("settings.json").writeText(gson.toJson(s))
+        home.manager.srcMainRes.file("settings.json").writeText(gson.toJson(newSettings))
         "gradle fatJar".runCommandInside(home.manager)
-        if (s.role == "admin") {
+        if (newSettings.role == "admin") {
             "yes | cp -f ${home.manager.buildLibs}/manager* ${root}".runCommand()
         } else {
             "cp ${home.manager.buildLibs}/manager* ${userTemp}".runCommand()
         }
+
 
         home.tls.server.deleteRecursively()
         home.tls.client.deleteRecursively()

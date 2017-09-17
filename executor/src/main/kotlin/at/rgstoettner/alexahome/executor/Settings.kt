@@ -1,7 +1,7 @@
-package at.rgstoettner.alexahome.manager
+package at.rgstoettner.alexahome.executor
 
 import com.google.gson.Gson
-import java.io.File
+
 
 class Settings {
 
@@ -29,13 +29,6 @@ class Settings {
             } else {
                 return Settings()
             }
-        }
-
-        fun loadFrom(file: File): Settings? {
-            if (file.exists()) {
-                return gson.fromJson(file.reader(), Settings::class.java)
-            }
-            return null
         }
     }
 

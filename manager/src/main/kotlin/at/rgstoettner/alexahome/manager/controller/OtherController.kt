@@ -17,7 +17,8 @@ class OtherController : CommandController() {
             "Logging in ...".println()
             home.manager.srcMainRes.file("settings.json").writeText(gson.toJson(settings))
             "gradle fatJar".runCommandInside(home.manager, false)
-            "yes | cp -f ${home.manager.buildLibs}/manager* ${root}".runCommand()
+            "yes | cp -f ${home.manager.buildLibs}/manager* ${root}".runCommand(false)
+            "The manager is now in Admin-Mode. You can now manage devices".println()
         } else {
             handleFatalError(CliError.UNKNOWN_USER)
         }

@@ -50,6 +50,7 @@ class UserController : CommandController() {
         settings.localPort = localPort
         settings.remoteDomain = remoteDomain
         settings.remotePort = remotePort
+        settings.password=tlsPass
 
         "Creating tls configuration...".println()
         "chmod +x ${home.tls.file("gen_user.sh")}".runCommand()
@@ -64,7 +65,6 @@ class UserController : CommandController() {
         val userDir = Directory("${home.lambda.tls.users}/$account")
         home.tls.client.file("client-cert.pem").override(userDir.file("client-cert.pem"))
         home.tls.client.file("client-key.pem").override(userDir.file("client-key.pem"))
-        userDir.file("pass.txt").writeText(tlsPass, Charsets.UTF_8)
         userDir.file("settings.json").writeText(gson.toJson(settings))
 
         "zip -r lambda.zip index.js tls".runCommandInside(home.lambda)
@@ -78,10 +78,8 @@ class UserController : CommandController() {
         "Building executor...".println()
         home.tls.client.file("client-keystore.jks").override(home.executor.srcMainRes.tls.file("client-keystore.jks"))
         home.tls.client.file("client-truststore.jks").override(home.executor.srcMainRes.tls.file("client-truststore.jks"))
-        home.executor.srcMainRes.tls.file("pass.txt").writeText(tlsPass, Charsets.UTF_8)
-        home.executor.srcMainRes.tls.file("host.txt").writeText(localIP, Charsets.UTF_8)
-        home.executor.srcMainRes.tls.file("port.txt").writeText(localPort.toString(), Charsets.UTF_8)
-        "gradle build".runCommandInside(home.executor, false)
+        home.executor.srcMainRes.file("settings.json").writeText(gson.toJson(settings))
+        "gradle fatJar".runCommandInside(home.executor, false)
         "cp ${home.executor.buildLibs}/executor* ${userTemp}".runCommand() //wildcard copy
 
         "Building skill...".println()

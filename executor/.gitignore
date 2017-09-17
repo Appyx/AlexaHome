@@ -1,19 +1,17 @@
+
+
+src/main/resources/
+
+out/
+.DS_Store
 .gradle
 build/
-.DS_Store
-src/main/resources/tls/
 !gradle/wrapper/gradle-wrapper.jar
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
+config.json
 
 ### IntelliJ IDEA ###
 .idea
 *.iws
 *.iml
 *.ipr
+

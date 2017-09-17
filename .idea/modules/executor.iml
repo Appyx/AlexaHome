@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id="executor" external.linked.project.path="$MODULE_DIR$/../../executor" external.root.project.path="$MODULE_DIR$/../../executor" external.system.id="GRADLE" external.system.module.group="at.rgstoettner.alexahome" external.system.module.version="1.0" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../executor">
+      <excludeFolder url="file://$MODULE_DIR$/../../executor/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../executor/build" />
+      <excludeFolder url="file://$MODULE_DIR$/../../executor/gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../executor/out" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

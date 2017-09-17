@@ -1,18 +1,10 @@
-.DS_Store
-.gradle/
-gradle/
-build/
-!gradle/wrapper/gradle-wrapper.jar
-
-
-src/main/resources/tls/
-config.json
-
-
-### STS ###
+#spring sts files
 .apt_generated
 .classpath
 .factorypath
 .project
 .settings
 .springBeans
+
+src/main/resources/tls/
+config.json

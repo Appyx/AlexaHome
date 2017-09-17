@@ -7,3 +7,12 @@ build/
 
 src/main/resources/tls/
 config.json
+
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans

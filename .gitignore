@@ -2,22 +2,10 @@
 .DS_Store
 
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-
 ### IntelliJ IDEA ###
 *.iws
 *.iml
 *.ipr
 .idea/
-
-
-
-
 
 manager/src/main/resources/

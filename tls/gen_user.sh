@@ -31,10 +31,10 @@ PREFIX=server
 ALIAS=server
 
 echo "Create key for server..."
-keytool -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -genkey -alias $ALIAS -keypass $1 -keyalg RSA -keysize 2048 -validity 3650 -dname "CN=$3,O=AlexaHome,OU=$5" -ext san=dns$3,ip:$2,dns:localhost,ip:127.0.0.1
+keytool -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -genkey -alias $ALIAS -keypass $1 -keyalg RSA -keysize 2048 -validity 3650 -dname "CN=$3,O=AlexaHome,OU=$5" -ext san=dns:$3,ip:$2,dns:localhost,ip:127.0.0.1
 
 echo "Create csr to get a cert..."
-keytool -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -certreq -alias $ALIAS -file $DIR/$PREFIX.csr -ext san=dns$3,ip:$2,dns:localhost,ip:127.0.0.1
+keytool -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -certreq -alias $ALIAS -file $DIR/$PREFIX.csr -ext san=dns:$3,ip:$2,dns:localhost,ip:127.0.0.1
 
 echo "Sign the csr..."
 openssl ca -batch -config openssl.cnf -passin pass:$4 -policy policy_match -out $DIR/$PREFIX.crt -in $DIR/$PREFIX.csr

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 LC_ALL=en_US.UTF-8
 LANG=en_US.UTF-8
 
@@ -36,10 +38,8 @@ keytool -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -genkey -alias $ALIAS 
 echo "Create csr to get a cert..."
 keytool -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -certreq -alias $ALIAS -file $DIR/$PREFIX.csr -ext san=dns:$3,ip:$2,dns:localhost,ip:127.0.0.1
 
-echo "Sign the csr..."
-echo export SAN="DNS:$3,DNS:localhost,IP:$2,IP:127.0.0.1"
 
-openssl ca -batch -passin pass:$4 -policy policy_match -out $DIR/$PREFIX.crt -in $DIR/$PREFIX.csr -config openssl.cnf -extensions san_env 
+openssl ca -batch -passin pass:$4 -policy policy_match -out $DIR/$PREFIX.crt -in $DIR/$PREFIX.csr -config openssl.cnf -extensions SAN 
 
 rm $DIR/$PREFIX.csr
 

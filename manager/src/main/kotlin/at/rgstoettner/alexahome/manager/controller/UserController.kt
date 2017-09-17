@@ -52,9 +52,15 @@ class UserController : CommandController() {
         settings.remotePort = remotePort
         settings.password = tlsPass
 
+
         "Creating tls configuration...".println()
         "chmod +x ${home.tls.file("gen_user.sh")}".runCommand()
+
+        var content = home.tls.file("openssl_nosan.cnf").readText()
+        content = content.plus("\n[SAN]\nsubjectAltName=DNS:localhost,DNS:$remoteDomain,IP:127.0.0.1,IP:$localIP")
+        home.tls.file("openssl.cnf").writeText(content)
         "./gen_user.sh $tlsPass $localIP $remoteDomain $rootPass $account".runCommandInside(home.tls)
+        home.tls.file("openssl.cnf").delete()
         if (logContainsError()) {
             home.tls.server.deleteRecursively()
             home.tls.client.deleteRecursively()

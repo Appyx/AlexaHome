@@ -26,6 +26,7 @@ class InstallController : CommandController() {
         }
         "Genrating Certificate Authority..".println()
         "chmod +x ${home.tls.file("gen_ca.sh")}".runCommand()
+        "echo export SAN=DNS:localhost,IP:127.0.0.1".runCommand()
         "./gen_ca.sh $pass".runCommandInside(home.tls)
 
         home.tls.certs.file("ca.crt").copyTo(home.lambda.tls.file("ca.crt"), true)

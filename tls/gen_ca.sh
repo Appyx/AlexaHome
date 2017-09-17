@@ -17,6 +17,7 @@ mkdir certs
 echo '01' > serial
 touch index.txt
 
+echo export SAN="DNS:localhost,IP:127.0.0.1"
 #create the ca's certificate and key
 openssl req -config openssl.cnf -new -x509 -extensions v3_ca -keyout private/ca.key -out certs/ca.crt -days 3650 -subj "/O=AlexaHome/CN=root" -passout pass:$1
 

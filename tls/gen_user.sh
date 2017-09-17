@@ -37,7 +37,10 @@ echo "Create csr to get a cert..."
 keytool -keystore $DIR/$PREFIX-keystore.jks -storepass $1 -certreq -alias $ALIAS -file $DIR/$PREFIX.csr -ext san=dns:$3,ip:$2,dns:localhost,ip:127.0.0.1
 
 echo "Sign the csr..."
-openssl ca -batch -config openssl.cnf -passin pass:$4 -policy policy_match -out $DIR/$PREFIX.crt -in $DIR/$PREFIX.csr
+echo export SAN="DNS:$3,DNS:localhost,IP:$2,IP:127.0.0.1"
+
+openssl ca -batch -passin pass:$4 -policy policy_match -out $DIR/$PREFIX.crt -in $DIR/$PREFIX.csr -config openssl.cnf -extensions san_env 
+
 rm $DIR/$PREFIX.csr
 
 echo "Import the ca into the keystore to create ca chain..."

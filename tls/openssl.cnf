@@ -120,6 +120,9 @@ string_mask = nombstr
 
 # req_extensions = v3_req # The extensions to add to a certificate request
 
+[ san_env ]
+subjectAltName=${ENV::SAN}
+
 [ req_distinguished_name ]
 countryName			= Country Name (2 letter code)
 countryName_default		= AU

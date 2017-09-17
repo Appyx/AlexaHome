@@ -1,5 +1,6 @@
 package at.rgstoettner.alexahome.manager
 
+
 import at.rgstoettner.alexahome.manager.data.Configuration
 
 class Endpoint private constructor() {

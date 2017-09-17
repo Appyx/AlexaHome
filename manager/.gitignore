@@ -1,17 +1,7 @@
-
-
-src/main/resources/settings/
-src/main/resources/tls/
-
-out/
 .DS_Store
 .gradle
+gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
-config.json
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+src/main/resources/

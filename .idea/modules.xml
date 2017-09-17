@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/executor.iml" filepath="$PROJECT_DIR$/.idea/modules/executor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/executor_main.iml" filepath="$PROJECT_DIR$/.idea/modules/executor_main.iml" group="executor" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/manager.iml" filepath="$PROJECT_DIR$/.idea/modules/manager.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/manager_main.iml" filepath="$PROJECT_DIR$/.idea/modules/manager_main.iml" group="manager" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/skill.iml" filepath="$PROJECT_DIR$/.idea/modules/skill.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/skill_main.iml" filepath="$PROJECT_DIR$/.idea/modules/skill_main.iml" group="skill" />
+    </modules>
+  </component>
+</project>

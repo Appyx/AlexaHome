@@ -18,7 +18,7 @@ import java.util.*
 fun main(args: Array<String>) {
     val app = SpringApplication(SkillApplication::class.java)
     val mapper = ObjectMapper()
-    val node = mapper.readValue(ClassPathResource("tls/settings.json").inputStream.bufferedReader(Charsets.UTF_8), JsonNode::class.java)
+    val node = mapper.readValue(ClassPathResource("settings.json").inputStream.bufferedReader(Charsets.UTF_8), JsonNode::class.java)
     val props = Properties()
     props.put("server.ssl.trust-store-password", node.get("password").textValue())
     props.put("server.ssl.key-store-password", node.get("password").textValue())

@@ -7,4 +7,5 @@
 .springBeans
 
 src/main/resources/tls/
+src/main/resources/settings.json
 config.json

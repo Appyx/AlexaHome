@@ -50,7 +50,7 @@ class UserController : CommandController() {
         settings.localPort = localPort
         settings.remoteDomain = remoteDomain
         settings.remotePort = remotePort
-        settings.password=tlsPass
+        settings.password = tlsPass
 
         "Creating tls configuration...".println()
         "chmod +x ${home.tls.file("gen_user.sh")}".runCommand()
@@ -85,12 +85,7 @@ class UserController : CommandController() {
         "Building skill...".println()
         home.tls.server.file("server-keystore.jks").override(home.skill.srcMainRes.tls.file("server-keystore.jks"))
         home.tls.server.file("server-truststore.jks").override(home.skill.srcMainRes.tls.file("server-truststore.jks"))
-        home.skill.srcMainRes.tls.file("tls.properties").writeText(
-                "server.ssl.trust-store-password=$tlsPass\n" +
-                        "server.ssl.key-store-password=$tlsPass\n" +
-                        "server.ssl.key-password=$tlsPass\n" +
-                        "server.port=$localPort"
-                , Charsets.UTF_8)
+        home.skill.srcMainRes.file("settings.json").writeText(gson.toJson(settings))
         "gradle build".runCommandInside(home.skill, false)
         "cp ${home.skill.buildLibs}/skill* ${userTemp}".runCommand() //wildcard copy
 

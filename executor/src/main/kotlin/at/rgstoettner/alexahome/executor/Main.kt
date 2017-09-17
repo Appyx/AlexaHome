@@ -7,7 +7,7 @@ val lock = Object()
 fun main(args: Array<String>) {
 
     val settings = Settings.load()
-    val endpoint = Endpoint("ws")
+    val endpoint = Endpoint("wss://${settings.localIp}:${settings.localPort}/wss")
     endpoint.socket = SSLSocket(settings.password!!).getSocket()
     endpoint.connectBlocking()
 

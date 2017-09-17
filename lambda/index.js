@@ -29,11 +29,13 @@ function redirect(user,data,callback){
     if(fs.existsSync("tls/users/"+user)){
         var key=fs.readFileSync("tls/users/"+user+"/client-key.pem");
         var cert=fs.readFileSync("tls/users/"+user+"/client-cert.pem");
-        var pass=fs.readFileSync("tls/users/"+user+"/pass.txt","UTF-8");
-        var host=fs.readFileSync("tls/users/"+user+"/host.txt","UTF-8");
-        var port=fs.readFileSync("tls/users/"+user+"/port.txt","UTF-8");
         
-        console.log("redirecting to host: "+host);
+        var settings=JSON.parse(fs.readFileSync("tls/users/"+user+"/settings.json","UTF-8"));
+        var pass=settings.password;
+        var host=settings.remoteDomain;
+        var port=settings.remotePort;
+        
+        console.log("redirecting to host: "+host+":"+port);
         
         var options = {
             hostname: host,

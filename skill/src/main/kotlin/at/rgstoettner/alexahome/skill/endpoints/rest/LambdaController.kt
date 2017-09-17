@@ -27,7 +27,7 @@ class LambdaController {
     private lateinit var query: Query
 
     @RequestMapping(value = "/", method = arrayOf(RequestMethod.POST))
-    fun request(@RequestBody json: JsonNode): String {
+    fun handleCloudFunction(@RequestBody json: JsonNode): String {
         logger.info("REQUEST: $json")
         val mapper = ObjectMapper()
 
@@ -47,5 +47,11 @@ class LambdaController {
         }
         logger.info("RESPONSE: $result")
         return result
+    }
+
+
+    @RequestMapping(value = "/test", method = arrayOf(RequestMethod.GET))
+    fun handleConfig(): String {
+        return "hello"
     }
 }

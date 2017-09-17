@@ -2,6 +2,14 @@ package at.rgstoettner.alexahome.manager
 
 
 import at.rgstoettner.alexahome.manager.data.Configuration
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.impl.client.HttpClientBuilder
+import java.security.KeyStore
+import java.security.SecureRandom
+import javax.net.ssl.KeyManagerFactory
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+
 
 class Endpoint private constructor() {
 
@@ -22,9 +30,36 @@ class Endpoint private constructor() {
     }
 
     fun configure(settings: Settings): Endpoint {
-        host=settings.remoteDomain!!
-        port=settings.remotePort!!
-        return instance
+
+        host = settings.remoteDomain!!
+        port = settings.remotePort!!
+
+        val client = HttpClientBuilder.create()
+                .setSSLContext(getSSLContext(settings.password!!))
+                .build()
+
+        val httpget = HttpGet("https://127.0.0.1:${settings.localPort}/test")
+        val response = client.execute(httpget)
+
+        println(response.entity.content.bufferedReader().readText())
+
+        return this
+    }
+
+    fun getSSLContext(password: String): SSLContext {
+        val keyStore = KeyStore.getInstance("jks")
+        keyStore.load(this::class.java.classLoader.getResourceAsStream("tls/client-keystore.jks"), password.toCharArray())
+        val keyManagerFactory = KeyManagerFactory.getInstance("SunX509")
+        keyManagerFactory.init(keyStore, password.toCharArray())
+
+        val trustStore = KeyStore.getInstance("jks")
+        trustStore.load(this::class.java.classLoader.getResourceAsStream("tls/client-truststore.jks"), password.toCharArray())
+        val trustManagerFactory = TrustManagerFactory.getInstance("SunX509")
+        trustManagerFactory.init(trustStore)
+
+        val context = SSLContext.getInstance("SSL")
+        context.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom())
+        return context
     }
 
 

@@ -7,7 +7,7 @@ import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManagerFactory
 
-class SSLSocket(password: String) {
+class SecureSocket(password: String) {
 
     private val context: SSLContext
 

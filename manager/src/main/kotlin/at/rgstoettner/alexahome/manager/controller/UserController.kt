@@ -22,36 +22,34 @@ class UserController : CommandController() {
      * 4. copy truststore/keystore to skill and build it
      * 5. create zip package of executor and skill
      */
-    private fun addUser(account: String, settings: Settings? = null) {
+    private fun addUser(account: String) {
         if (File("${home.lambda.tls.users}/$account").exists()) handleFatalError(CliError.USER_ALREADY_EXISTS)
+        val settings = Settings()
+
         "Enter the password for the Certificate Authority:".println()
         val rootPass = requiredReadLine()
         "Enter a password for the user keys: (optional)".println()
         var tlsPass = safeReadLine()
         if (tlsPass.isEmpty()) tlsPass = UUID.randomUUID().toString()
 
-        val oldLocal = if (settings != null) "\nPrevious was: ${settings.localIp}:${settings.localPort}" else ""
-        "Enter the local ip and the local port of the server: [X.X.X.X:YYYY]$oldLocal".println()
+        "Enter the local ip and the local port of the server: [X.X.X.X:YYYY]".println()
         val local = requiredReadLine()
         val localIP = local.split(":").getOrElse(0) { handleFatalError(CliError.UNKNOWN_ARGUMENTS);"" }
         val localPort = local.split(":").getOrElse(1) { handleFatalError(CliError.UNKNOWN_ARGUMENTS);"" }.toIntOrNull()
         if (localPort == null || localPort <= 1 || localPort > 65535) handleFatalError(CliError.ARGUMENTS_NOT_SUPPORTED)
 
-        val oldRemote = if (settings != null) "\nPrevious was: ${settings.remoteDomain}:${settings.remotePort}" else ""
-        "Enter the remote domain and the remote port of the server: [yourdomain.com:YYYY]$oldRemote".println()
+        "Enter the remote domain and the remote port of the server: [yourdomain.com:YYYY]".println()
         val remote = requiredReadLine()
         val remoteDomain = remote.split(":").getOrElse(0) { handleFatalError(CliError.UNKNOWN_ARGUMENTS); "" }
         val remotePort = remote.split(":").getOrElse(1) { handleFatalError(CliError.UNKNOWN_ARGUMENTS); "" }.toIntOrNull()
         if (remotePort == null || remotePort <= 1 || remotePort > 65535) handleFatalError(CliError.ARGUMENTS_NOT_SUPPORTED)
 
-
-        val newSettings = Settings()
-        newSettings.user = account
-        newSettings.role = if (settings != null) settings.role else "user"
-        newSettings.localIp = localIP
-        newSettings.localPort = localPort
-        newSettings.remoteDomain = remoteDomain
-        newSettings.remotePort = remotePort
+        settings.user = account
+        settings.role = "user"
+        settings.localIp = localIP
+        settings.localPort = localPort
+        settings.remoteDomain = remoteDomain
+        settings.remotePort = remotePort
 
         "Creating tls configuration...".println()
         "chmod +x ${home.tls.file("gen_user.sh")}".runCommand()
@@ -62,17 +60,18 @@ class UserController : CommandController() {
             handleFatalError(CliError.TLS_CONFIG_FAILED)
         }
 
-
         "Building AWS lambda...".println()
         val userDir = Directory("${home.lambda.tls.users}/$account")
         home.tls.client.file("client-cert.pem").override(userDir.file("client-cert.pem"))
         home.tls.client.file("client-key.pem").override(userDir.file("client-key.pem"))
         userDir.file("pass.txt").writeText(tlsPass, Charsets.UTF_8)
-        userDir.file("settings.json").writeText(gson.toJson(newSettings))
+        userDir.file("settings.json").writeText(gson.toJson(settings))
 
         "zip -r lambda.zip index.js tls".runCommandInside(home.lambda)
         home.lambda.file("lambda.zip").override(File("lambda.zip"))
 
+
+        //TODO: apply settings to executor and skill
 
         userTemp.mkdir()
 
@@ -100,13 +99,9 @@ class UserController : CommandController() {
         "Building manager...".println()
         home.tls.client.file("client-keystore.jks").override(home.manager.srcMainRes.tls.file("client-keystore.jks"))
         home.tls.client.file("client-truststore.jks").override(home.manager.srcMainRes.tls.file("client-truststore.jks"))
-        home.manager.srcMainRes.file("settings.json").writeText(gson.toJson(newSettings))
+        home.manager.srcMainRes.file("settings.json").writeText(gson.toJson(settings))
         "gradle fatJar".runCommandInside(home.manager, false)
-        if (newSettings.role == "admin") {
-            "yes | cp -f ${home.manager.buildLibs}/manager* ${root}".runCommand()
-        } else {
-            "cp ${home.manager.buildLibs}/manager* ${userTemp}".runCommand()
-        }
+        "cp ${home.manager.buildLibs}/manager* ${userTemp}".runCommand()
 
 
         home.tls.server.deleteRecursively()
@@ -151,17 +146,6 @@ class UserController : CommandController() {
         } else {
             "No users are registered.".println()
         }
-    }
-
-    fun edit() {
-        if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
-        "Enter the account: [bob@example.com]".println()
-        val account = requiredReadLine()
-        val accountDir = Directory("${home.lambda.tls.users}/$account")
-        if (!accountDir.exists()) handleFatalError(CliError.UNKNOWN_USER)
-        val settings = Settings.loadFrom(accountDir.file("settings.json"))
-        removeUser(account, silent = true)
-        addUser(account, settings)
     }
 
     fun remove() {

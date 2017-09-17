@@ -21,7 +21,6 @@ class App() {
 
         userPolicy.add(Triple("add user", "Adds a user", { UserController().add() }))
         userPolicy.add(Triple("list users", "Lists all configured users", { UserController().list() }))
-        userPolicy.add(Triple("edit user", "Edits a user", { UserController().edit() }))
         userPolicy.add(Triple("remove user", "Removes a user", { UserController().remove() }))
 
         devicePolicy.add(Triple("add device", "Adds a device", { DeviceController().add() }))

@@ -1,11 +1,9 @@
 package at.rgstoettner.alexahome.executor
 
-import java.net.Socket
 import java.security.KeyStore
 import java.security.SecureRandom
-import javax.net.ssl.KeyManagerFactory
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.*
+
 
 class SecureSocket(password: String) {
 
@@ -22,12 +20,16 @@ class SecureSocket(password: String) {
         val trustManagerFactory = TrustManagerFactory.getInstance("SunX509")
         trustManagerFactory.init(trustStore)
 
-        context = SSLContext.getInstance("SSL")
+        context = SSLContext.getInstance("TLS")
         context.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom())
     }
 
 
-    fun getSocket(): Socket {
-        return context.socketFactory.createSocket()
+    fun getSocket(): SSLSocket {
+        val sock = context.socketFactory.createSocket() as SSLSocket
+        val sslParams = SSLParameters()
+        sslParams.endpointIdentificationAlgorithm = "HTTPS"
+        sock.sslParameters = sslParams
+        return sock
     }
 }

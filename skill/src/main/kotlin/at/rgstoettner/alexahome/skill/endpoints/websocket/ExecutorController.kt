@@ -20,10 +20,13 @@ class ExecutorController : TextWebSocketHandler() {
     }
 
     override fun afterConnectionClosed(session: WebSocketSession?, status: CloseStatus?) {
-        // The WebSocket has been closed
+
     }
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
+
+
+
         session.sendMessage(TextMessage("hello client"))
     }
 

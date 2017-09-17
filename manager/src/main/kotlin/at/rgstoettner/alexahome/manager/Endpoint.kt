@@ -38,7 +38,7 @@ class Endpoint private constructor() {
                 .setSSLContext(getSSLContext(settings.password!!))
                 .build()
 
-        val httpget = HttpGet("https://127.0.0.1:${settings.localPort}/test")
+        val httpget = HttpGet("https://localhost:${settings.localPort}/test")
         val response = client.execute(httpget)
 
         println(response.entity.content.bufferedReader().readText())

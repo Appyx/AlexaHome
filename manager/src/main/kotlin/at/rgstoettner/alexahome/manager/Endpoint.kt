@@ -57,7 +57,7 @@ class Endpoint private constructor() {
         val trustManagerFactory = TrustManagerFactory.getInstance("SunX509")
         trustManagerFactory.init(trustStore)
 
-        val context = SSLContext.getInstance("SSL")
+        val context = SSLContext.getInstance("TLS")
         context.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), SecureRandom())
         return context
     }

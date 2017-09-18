@@ -5,9 +5,9 @@ import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
     val app = App()
-    val settings = Settings.load()
+//    val settings = Settings.load()
 
-//    val settings: Settings? = null
+    val settings: Settings? = null
 
     if (settings != null) { //not ready to configure devices
         when (settings.role) {

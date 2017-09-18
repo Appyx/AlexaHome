@@ -41,7 +41,29 @@ class InstallController : AbstractController() {
     fun uninstall(force: Boolean = false) {
         if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
         fun remove() {
+            if (home.lambda.tls.users.exists()) {
+                val walk = home.lambda.tls.users.walkTopDown()
+                val users = walk
+                        .maxDepth(1)
+                        .asSequence()
+                        .filter { it.isDirectory }
+                        .map { it.name }
+                        .filter { it != "users" }
+                        .filter { !it.startsWith(".") }
+                        .toList()
+                users.forEach { account ->
+                    val zip = root.file("$account.zip")
+                    if (zip.exists()) {
+                        zip.delete()
+                    }
+                }
+            }
+            val lambdaZip = root.file("lambda.zip")
+            if (lambdaZip.exists()) {
+                lambdaZip.delete()
+            }
             home.deleteRecursively()
+
             "Successfully uninstalled!".println()
         }
 
@@ -65,6 +87,7 @@ class InstallController : AbstractController() {
             "Backing up base components...".println()
             home.lambda.tls.copyRecursively(updateTemp.lambda.tls, true)
             home.tls.copyRecursively(updateTemp.general.tls, true)
+
             home.deleteRecursively()
 
             "Fetching project...".println()

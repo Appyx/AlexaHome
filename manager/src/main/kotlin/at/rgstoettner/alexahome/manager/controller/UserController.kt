@@ -165,7 +165,7 @@ class UserController : AbstractController() {
         val file = home.lambda.tls.users.dir(account)
         if (file.exists()) {
             file.deleteRecursively()
-            val zip = root.dir(account)
+            val zip = root.file("$account.zip")
             if (zip.exists()) {
                 zip.delete()
             }

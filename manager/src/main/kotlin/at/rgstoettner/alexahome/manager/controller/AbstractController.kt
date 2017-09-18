@@ -55,13 +55,13 @@ abstract class AbstractController {
     }
 
     protected object updateTemp : Directory("update_temp_dir") {
-        object lambda : Directory("update_temp/lambda") {
-            object tls : Directory("update_temp/lambda/tls") {
+        object lambda : Directory("update_temp_dir/lambda") {
+            object tls : Directory("update_temp_dir/lambda/tls") {
             }
         }
 
-        object general : Directory("update_temp/general") {
-            object tls : Directory("update_temp/general/tls") {
+        object general : Directory("update_temp_dir/general") {
+            object tls : Directory("update_temp_dir/general/tls") {
             }
         }
     }

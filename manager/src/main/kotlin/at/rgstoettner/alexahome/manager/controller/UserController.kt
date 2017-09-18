@@ -4,7 +4,7 @@ import at.rgstoettner.alexahome.manager.*
 import java.io.File
 import java.util.*
 
-class UserController : CommandController() {
+class UserController : AbstractController() {
 
     fun add() {
         if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
@@ -23,7 +23,7 @@ class UserController : CommandController() {
      * 5. create zip package of executor and skill
      */
     private fun addUser(account: String) {
-        if (File("${home.lambda.tls.users}/$account").exists()) handleFatalError(CliError.USER_ALREADY_EXISTS)
+        if (home.lambda.tls.users.dir(account).exists()) handleFatalError(CliError.USER_ALREADY_EXISTS)
         val settings = Settings()
 
         "Enter the password for the Certificate Authority:".println()
@@ -68,7 +68,7 @@ class UserController : CommandController() {
         }
 
         "Building AWS lambda...".println()
-        val userDir = Directory("${home.lambda.tls.users}/$account")
+        val userDir = home.lambda.tls.users.dir(account)
         home.tls.client.file("client-cert.pem").override(userDir.file("client-cert.pem"))
         home.tls.client.file("client-key.pem").override(userDir.file("client-key.pem"))
         userDir.file("settings.json").writeText(gson.toJson(settings))
@@ -136,8 +136,12 @@ class UserController : CommandController() {
 
             if (users.isNotEmpty()) {
                 "The following users are currently registered:".println()
-                users.forEach {
-                    "* %-20s".format(it).println()
+                users.forEach { account ->
+                    val settings = home.lambda.tls.users.dir(account).file("settings.json").asClass(Settings::class.java)
+                    "* Account: %-20s Remote: %-20s Local: %-20s".format(settings.user,
+                            "${settings.remoteDomain}:${settings.remotePort}",
+                            "${settings.localIp}:${settings.remotePort}")
+                            .println()
                 }
             } else {
                 "No users are registered.".println()
@@ -158,9 +162,13 @@ class UserController : CommandController() {
      * Removes the user folder from the lambda and creates a new zip
      */
     private fun removeUser(account: String, silent: Boolean = false) {
-        val file = File("${home.lambda.tls.users}/$account")
+        val file = home.lambda.tls.users.dir(account)
         if (file.exists()) {
             file.deleteRecursively()
+            val zip = root.dir(account)
+            if (zip.exists()) {
+                zip.delete()
+            }
             if (!silent) "Successfully removed user $account!".println()
             if (home.lambda.tls.users.walkTopDown().count() != 0) { //if directory is empty
                 "zip -r lambda.zip index.js tls".runCommandInside(home.lambda, !silent)

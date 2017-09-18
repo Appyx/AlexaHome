@@ -2,7 +2,7 @@ package at.rgstoettner.alexahome.manager.controller
 
 import at.rgstoettner.alexahome.manager.*
 
-class OtherController : CommandController() {
+class OtherController : AbstractController() {
     fun login() {
         if (!isInstalled) handleFatalError(CliError.NOT_INSTALLED)
         "Enter your user: [alice@example.com]".println()

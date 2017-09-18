@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import java.io.File
 import java.util.concurrent.TimeUnit
 
-abstract class CommandController {
+abstract class AbstractController {
     protected var log = ""
         private set
     protected val gson = Gson()
@@ -101,6 +101,10 @@ abstract class CommandController {
         fun file(name: String): File {
             return File(path.plus("/").plus(name))
         }
+
+        fun dir(name: String): Directory {
+            return Directory(path.plus("/").plus(name))
+        }
     }
 
     fun File.override(file: File) {
@@ -108,6 +112,14 @@ abstract class CommandController {
             file.deleteRecursively()
         }
         this.copyTo(file, overwrite = true)
+    }
+
+    fun <T> File.asClass(clazz: Class<T>): T {
+        return gson.fromJson(this.bufferedReader(), clazz)
+    }
+
+    fun File.asString(): String {
+        return this.bufferedReader().readText()
     }
 }
 

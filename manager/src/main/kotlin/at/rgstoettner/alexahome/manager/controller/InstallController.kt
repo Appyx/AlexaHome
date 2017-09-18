@@ -5,7 +5,7 @@ import at.rgstoettner.alexahome.manager.handleFatalError
 import at.rgstoettner.alexahome.manager.println
 import at.rgstoettner.alexahome.manager.requiredReadLine
 
-class InstallController : CommandController() {
+class InstallController : AbstractController() {
 
     private val gitRepo = "https://github.com/Appyx/AlexaHome.git"
 

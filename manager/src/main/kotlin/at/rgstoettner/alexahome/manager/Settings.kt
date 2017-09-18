@@ -18,7 +18,7 @@ class Settings {
 
         private val gson = Gson()
 
-        fun load(): Settings {
+        fun load(): Settings? {
             val reader = this::class.java
                     .classLoader
                     .getResourceAsStream("settings.json")
@@ -27,15 +27,8 @@ class Settings {
             if (reader != null) {
                 return gson.fromJson(reader, Settings::class.java)
             } else {
-                return Settings()
+                return null
             }
-        }
-
-        fun loadFrom(file: File): Settings? {
-            if (file.exists()) {
-                return gson.fromJson(file.reader(), Settings::class.java)
-            }
-            return null
         }
     }
 

@@ -1,4 +1,4 @@
-package at.rgstoettner.alexahome.executor
+package at.rgstoettner.alexahome.executor.connection
 
 import java.security.KeyStore
 import java.security.SecureRandom

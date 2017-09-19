@@ -27,5 +27,7 @@ enum class CliError {
 
     NOT_IMPLEMENTED,
 
-    BUILD_FAILED
+    BUILD_FAILED,
+
+    CONFIGURATION_FAILED
 }

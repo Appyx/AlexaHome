@@ -28,7 +28,7 @@ class App() {
         devicePolicy.add(Triple("remove device", "Removes a device", { DeviceController().remove() }))
         devicePolicy.add(Triple("wipe", "Removes everything", { DeviceController().wipe() }))
 
-        //otherPolicy.add(Triple("login", "Endpoint to manage devices", { OtherController().login() }))
+        //otherPolicy.add(Triple("login", "RestManager to manage devices", { OtherController().login() }))
     }
 
     private fun formatPolicy(k: String, v: String) = "* %-20s - %s".format(k, v)
@@ -69,7 +69,7 @@ class App() {
 //        b.appendln("Welcome to the HomeManager (Admin-Mode).")
 //        b.appendln()
 //        b.appendln("Hello ${settings.user}!")
-//        b.appendln("You are logged in to your personal skill at ${Endpoint.instance.host}:${Endpoint.instance.port}")
+//        b.appendln("You are logged in to your personal skill at ${RestManager.instance.host}:${RestManager.instance.port}")
 //        b.appendln()
 //        b.appendln("Here you can manage your users/devices.")
 //        b.appendln("The following commands are available:")
@@ -100,7 +100,7 @@ class App() {
         b.appendln("Welcome to the HomeManager (User-Mode).")
         b.appendln()
         b.appendln("Hello ${settings.user}!")
-        b.appendln("You are logged in to your personal skill at ${Endpoint.instance.host}:${Endpoint.instance.port}")
+        b.appendln("You are logged in to your personal skill at ${skill.host}:${skill.port}")
         b.appendln()
         b.appendln("Here you can manage your devices.")
         b.appendln("The following commands are available:")

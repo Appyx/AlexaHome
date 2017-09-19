@@ -10,4 +10,14 @@ class Configuration {
         ids.add(device.id)
     }
 
+
+    override fun toString(): String {
+        val builder = StringBuilder()
+
+        devices.values.forEach {
+            builder.appendln(it.v2?.friendlyName)
+        }
+        return builder.toString()
+    }
+
 }

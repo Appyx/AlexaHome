@@ -58,7 +58,7 @@ class DeviceController {
 
         "$name successfully added. You can now discover the device with Alexa.".println()
 
-        val config = Endpoint.instance.readConfig()
+        val config = skill.readConfig()
         val device = AlexaHomeDevice(name, type, commandMap)
 
         if (description.isNotEmpty()) device.setDescription(description)
@@ -66,11 +66,11 @@ class DeviceController {
         if (model.isNotEmpty()) device.setModel(model)
 
         config.addDevice(device)
-        Endpoint.instance.writeConfig(config)
+        skill.writeConfig(config)
     }
 
     fun list() {
-        handleFatalError(CliError.NOT_IMPLEMENTED)
+        println(skill.readConfig())
     }
 
     fun edit() {

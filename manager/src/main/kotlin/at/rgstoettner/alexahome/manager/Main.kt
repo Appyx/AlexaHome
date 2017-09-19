@@ -3,18 +3,29 @@ package at.rgstoettner.alexahome.manager
 import kotlin.system.exitProcess
 
 
+val skill = RestManager()
+
 fun main(args: Array<String>) {
     val app = App()
     val settings = Settings.load()
 
-    if (settings != null) { //not ready to configure devices
+    var isLocal = false
+    val arguments = args.toMutableList()
+    args.forEach {
+        if (it.startsWith("--local")) {
+            arguments.remove(it)
+            isLocal = true
+        }
+    }
+
+    if (settings != null) { //not ready to connect devices
         when (settings.role) {
 //            "admin" -> {
-//                Endpoint.instance.configure(settings) //blocking connect
+//                RestManager.instance.connect(settings) //blocking connect
 //                app.handleAdminMode(settings)
 //            }
             "user" -> {
-                Endpoint.instance.configure(settings) //blocking connect
+                skill.connect(settings, isLocal) //blocking connect
                 app.handleUserMode(settings)
             }
         }
@@ -23,11 +34,11 @@ fun main(args: Array<String>) {
     }
 
     var line = ""
-    if (args.isEmpty()) {
+    if (arguments.isEmpty()) {
         line = requiredReadLine()
         line = line.trim()
     } else {
-        args.forEach { line = line.plus(it).plus(" ") }
+        arguments.forEach { line = line.plus(it).plus(" ") }
         line = line.trim()
         println("Argument was: $line")
     }

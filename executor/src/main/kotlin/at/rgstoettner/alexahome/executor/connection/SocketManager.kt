@@ -1,6 +1,5 @@
 package at.rgstoettner.alexahome.executor.connection
 
-import at.rgstoettner.alexahome.executor.SecureSocket
 import at.rgstoettner.alexahome.executor.Settings
 import at.rgstoettner.alexahome.executor.println
 import java.util.*
@@ -15,16 +14,16 @@ class SocketManager(val settings: Settings, val local: Boolean) {
     private var onMessageHandler: (String) -> String = {""}
 
     private val host: String
-    private val port: String
+    private val port: Int
 
 
     init {
         if (local) {
             host = settings.localIp!!
-            port = settings.localPort!!.toString()
+            port = settings.localPort!!
         } else {
             host = settings.remoteDomain!!
-            port = settings.remotePort!!.toString()
+            port = settings.remotePort!!
         }
     }
 

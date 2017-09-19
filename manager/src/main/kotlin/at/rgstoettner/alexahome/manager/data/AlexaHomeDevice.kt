@@ -6,7 +6,7 @@ class AlexaHomeDevice(friendlyName: String, type: String, commandMap: Map<String
     @Expose
     var id = "null@${System.currentTimeMillis()}"
     private var commands: MutableMap<String, String>
-    private var v2: AmazonDeviceV2? = null
+    var v2: AmazonDeviceV2? = null
 
     init {
 

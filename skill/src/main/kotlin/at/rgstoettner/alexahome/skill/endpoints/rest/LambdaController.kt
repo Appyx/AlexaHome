@@ -48,10 +48,4 @@ class LambdaController {
         logger.info("RESPONSE: $result")
         return result
     }
-
-
-    @RequestMapping(value = "/test", method = arrayOf(RequestMethod.GET))
-    fun handleConfig(): String {
-        return "hello"
-    }
 }

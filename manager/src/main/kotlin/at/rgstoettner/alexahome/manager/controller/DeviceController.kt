@@ -51,7 +51,7 @@ class DeviceController {
 
         val commandMap = mutableMapOf<String, String>()
         actionIndices.forEach {
-            println("Enter the command to execute for '${actions[it]}':")
+            println("Enter the hello to execute for '${actions[it]}':")
             val command = requiredReadLine()
             commandMap.put(actions[it], command)
         }

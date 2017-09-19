@@ -1,6 +1,7 @@
 package at.rgstoettner.alexahome.executor
 
-import at.rgstoettner.alexahome.executor.connection.SocketManager
+import at.rgstoettner.alexahome.executor.connection.MessageHandler
+import at.rgstoettner.alexahome.executor.connection.ReconnectingSocket
 import at.rgstoettner.alexahome.executor.plugin.PluginLoader
 
 
@@ -8,42 +9,27 @@ val lock = Object()
 
 fun main(args: Array<String>) {
     var isLocal = false
-    var alias: String? = null
-    var plugins: String? = null
+    var pluginDir: String? = null
     args.forEach {
         if (it.startsWith("--local")) {
             isLocal = true
         }
-        if (it.startsWith("--alias=")) {
-            val parts = it.split("=")
-            alias = parts.getOrNull(1)
-        }
         if (it.startsWith("--plugins=")) {
             val parts = it.split("=")
-            plugins = parts.getOrNull(1)
+            pluginDir = parts.getOrNull(1)
         }
     }
-
+    val pluginLoader = PluginLoader(pluginDir)
     val settings = Settings.load()
-    val socket = SocketManager(settings, isLocal)
-    socket.connect(onReady = {
-        alias?.let {
-            socket.send(it)
-        }
-    }, onMessage = {
-        print("Command is: $it")
-        "response"
-    })
-
-
-    val pluginLoader = PluginLoader(plugins)
-    println(pluginLoader.runPlugin("Command", "hello plugin"))
-
+    val socket = ReconnectingSocket(settings, isLocal)
+    val messageHandler=MessageHandler(socket,pluginLoader)
+    messageHandler.connect()
 
     synchronized(lock) {
         lock.wait()
     }
 }
+
 
 
 fun String.println() {

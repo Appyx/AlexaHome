@@ -55,8 +55,8 @@ class App() {
 //        b.appendln("--------------------------------------------------------")
 //        otherPolicy.forEach { (k, v, _) -> b.appendln(formatPolicy(k, v)) }
 //        b.appendln()
-        b.appendln("Each command starts an assistant which guides you through the process.")
-        b.append("Enter a command:")
+        b.appendln("Each hello starts an assistant which guides you through the process.")
+        b.append("Enter a hello:")
         b.toString().println()
 
         policy.addAll(setupPolicy)
@@ -85,8 +85,8 @@ class App() {
 //        b.appendln("Device Management")
 //        b.appendln("--------------------------------------------------------")
 //        devicePolicy.forEach { (k, v, _) -> b.appendln(formatPolicy(k, v)) }
-//        b.appendln("Each command starts an assistant which guides you through the process.")
-//        b.append("Enter a command:")
+//        b.appendln("Each hello starts an assistant which guides you through the process.")
+//        b.append("Enter a hello:")
 //        b.toString().println()
 //
 //        policy.addAll(setupPolicy)
@@ -108,8 +108,8 @@ class App() {
         b.appendln("Device Management")
         b.appendln("--------------------------------------------------------")
         devicePolicy.forEach { (k, v, _) -> b.appendln(formatPolicy(k, v)) }
-        b.appendln("Each command starts an assistant which guides you through the process.")
-        b.append("Enter a command:")
+        b.appendln("Each hello starts an assistant which guides you through the process.")
+        b.append("Enter a hello:")
         b.toString().println()
 
         policy.addAll(devicePolicy)

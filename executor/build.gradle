@@ -42,11 +42,15 @@ task fatJar(type: Jar) {
 }
 
 task runFatJar(type: JavaExec) {
+    if(project.hasProperty('myargs')){
+        args(myargs.split(','))
+    }
     standardInput = System.in
     dependsOn fatJar
     classpath = fatJar.outputs.files
     main = 'at.rgstoettner.alexahome.executor.MainKt'
 }
+
 compileTestKotlin {
     kotlinOptions {
         jvmTarget = "1.8"

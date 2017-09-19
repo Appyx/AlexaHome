@@ -6,7 +6,7 @@ import java.util.*
 import kotlin.system.exitProcess
 
 
-class SocketManager(val settings: Settings, val local: Boolean) {
+class ReconnectingSocket(val settings: Settings, val local: Boolean) {
 
     private var endpoint: Endpoint? = null
     private var delay = 0L

@@ -7,7 +7,6 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/executor_test.iml" filepath="$PROJECT_DIR$/.idea/modules/executor_test.iml" group="executor" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/manager.iml" filepath="$PROJECT_DIR$/.idea/modules/manager.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/manager_main.iml" filepath="$PROJECT_DIR$/.idea/modules/manager_main.iml" group="manager" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/manager_test.iml" filepath="$PROJECT_DIR$/.idea/modules/manager_test.iml" group="manager" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/skill.iml" filepath="$PROJECT_DIR$/.idea/modules/skill.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/skill_main.iml" filepath="$PROJECT_DIR$/.idea/modules/skill_main.iml" group="skill" />
     </modules>

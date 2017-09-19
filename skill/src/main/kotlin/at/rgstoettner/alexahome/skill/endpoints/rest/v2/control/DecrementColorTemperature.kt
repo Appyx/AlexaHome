@@ -12,12 +12,11 @@ class DecrementColorTemperature(id: String) : ControlResponse(id) {
         //NoSuchTargetError - the device was not found in the profile
         //UnsupportedTargetError - not supported anymore
         //UnsupportedOperationError - operation is unsupported
-        //UnsupportedTargetSettingError - command not working
+        //UnsupportedTargetSettingError - hello not working
         //DriverInternalError - device not responding
 
         try {
-            val result = executor.getValueForCommand(command!!)
-            val value = result!!.toInt()
+            val value = "2000"
 
             val achievedState = putObject("achievedState")
             val colorTemperature = achievedState.putObject("colorTemperature")

@@ -1,5 +1,5 @@
 
-src/main/resources/tls
-src/main/resources/settings.json
-
+!src/main/resources/plugins/
+src/main/resources/
+plugins/
 

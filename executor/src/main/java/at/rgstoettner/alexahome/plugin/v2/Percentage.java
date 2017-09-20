@@ -10,7 +10,7 @@ public interface Percentage extends DeviceV2 {
      *
      * @param delta The percent decrease to apply to the device specified as a 64-bit double. For this directive, deltaPercentage is subtracted from the current percent setting. For example, if the device is currently set to 40%, a deltaPercentage value of 15 means the device will be set at 25% after the request completes. Range is between 0.00 and 100.00, inclusive.
      */
-    void decrementPercentage(int delta);
+    void decrementPercentage(double delta);
 
     /**
      * “Alexa, increase device name by number percent”
@@ -20,7 +20,7 @@ public interface Percentage extends DeviceV2 {
      *
      * @param delta The percent increase to apply to the device specified as a 64-bit double. For this directive, deltaPercentage is added to the current percentage setting. For example, if the device is currently set to 40%, a deltaPercentage value of 15 means the device will be set at 55% after the request completes. Range is between 0.00 and 100.00, inclusive.
      */
-    void incrementPercentage(int delta);
+    void incrementPercentage(double delta);
 
 
     /**

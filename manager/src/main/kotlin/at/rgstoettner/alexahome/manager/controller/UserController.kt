@@ -24,7 +24,7 @@ class UserController : AbstractController() {
      */
     private fun addUser(account: String) {
         if (home.lambda.tls.users.dir(account).exists()) handleFatalError(CliError.USER_ALREADY_EXISTS)
-        val settings = Settings()
+
 
         "Enter the password for the Certificate Authority:".println()
         val rootPass = requiredReadLine()
@@ -44,6 +44,7 @@ class UserController : AbstractController() {
         val remotePort = remote.split(":").getOrElse(1) { handleFatalError(CliError.UNKNOWN_ARGUMENTS); "" }.toIntOrNull()
         if (remotePort == null || remotePort <= 1 || remotePort > 65535) handleFatalError(CliError.ARGUMENTS_NOT_SUPPORTED)
 
+        val settings = Settings()
         settings.user = account
         settings.role = "user"
         settings.localIp = localIP
@@ -51,7 +52,6 @@ class UserController : AbstractController() {
         settings.remoteDomain = remoteDomain
         settings.remotePort = remotePort
         settings.password = tlsPass
-
 
         "Creating tls configuration...".println()
         "chmod +x ${home.tls.file("gen_user.sh")}".runCommand()
@@ -76,9 +76,6 @@ class UserController : AbstractController() {
         "zip -r lambda.zip index.js tls".runCommandInside(home.lambda)
         home.lambda.file("lambda.zip").override(File("lambda.zip"))
 
-
-        //TODO: apply settings to executor and skill
-
         userTemp.mkdir()
 
         "Building executor...".println()
@@ -94,14 +91,6 @@ class UserController : AbstractController() {
         home.skill.srcMainRes.file("settings.json").writeText(gson.toJson(settings))
         "gradle build".runCommandInside(home.skill, false)
         "cp ${home.skill.buildLibs}/skill* ${userTemp}".runCommand() //wildcard copy
-
-        "Building manager...".println()
-        home.tls.client.file("client-keystore.jks").override(home.manager.srcMainRes.tls.file("client-keystore.jks"))
-        home.tls.client.file("client-truststore.jks").override(home.manager.srcMainRes.tls.file("client-truststore.jks"))
-        home.manager.srcMainRes.file("settings.json").writeText(gson.toJson(settings))
-        "gradle fatJar".runCommandInside(home.manager, false)
-        "cp ${home.manager.buildLibs}/manager* ${userTemp}".runCommand()
-
 
         home.tls.server.deleteRecursively()
         home.tls.client.deleteRecursively()
@@ -179,6 +168,4 @@ class UserController : AbstractController() {
             handleFatalError(CliError.UNKNOWN_USER)
         }
     }
-
-
 }

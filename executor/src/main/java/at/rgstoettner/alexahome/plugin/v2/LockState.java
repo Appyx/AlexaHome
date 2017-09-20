@@ -1,24 +1,25 @@
 package at.rgstoettner.alexahome.plugin.v2;
 
-public interface LockState {
+public interface LockState extends DeviceV2 {
 
 
     /**
      * “Alexa, is lock name locked/unlocked?”
      *
-     * @return
-     * Indicates the locked state of the specified appliance. Valid values are LOCKED, UNLOCKED
+     * @return Indicates the locked state of the specified appliance. Valid values are LOCKED, UNLOCKED
      */
-    String getLockState();
+    Value getLockState();
 
 
     /**
      * “Alexa, lock the lock name”
      *
-     * @param lockState
-     * Indicates the requested lock-state of the specified appliance. Valid value for this request is LOCKED.
-     * @return
-     * Indicates the locked state of the specified appliance. Valid value for this directive is LOCKED or UNLOCKED.
+     * @param lockState Indicates the requested lock-state of the specified appliance. Valid value for this request is LOCKED.
+     * @return Indicates the locked state of the specified appliance. Valid value for this directive is LOCKED or UNLOCKED.
      */
-    String setLockState(String lockState);
+    Value setLockState(Value lockState);
+
+    enum Value {
+        LOCKED, UNLOCKED
+    }
 }

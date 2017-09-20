@@ -4,6 +4,7 @@ import at.rgstoettner.alexahome.plugin.v2.*
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 
+
 class V2Executor(val plugin: V2Plugin, val type: String) {
     var payload = JsonObject()
     var name: String? = null
@@ -67,15 +68,162 @@ class V2Executor(val plugin: V2Plugin, val type: String) {
 
 
     private fun executeLighting(device: Lighting, payload: JsonObject): JsonObject? {
-        return null
+        val response = JsonObject()
+        when (methodName) {
+            "setColor" -> {
+                val wrapper = payload.get("color") as JsonObject
+                val value = gson.fromJson(wrapper, Lighting.Color::class.java)
+
+                val result = device.setColor(value)
+                if (device.isError) return null
+
+                val achievedState = JsonObject()
+                achievedState.add("color", gson.toJsonTree(result))
+                response.add("achievedState", achievedState)
+                return response
+            }
+            "setColorTemperature" -> {
+                val state = payload.get("colorTemperature") as JsonObject
+                val value = state.get("value").asInt
+
+                val result = device.setColorTemperature(value)
+                if (device.isError) return null
+
+                val achievedState = JsonObject()
+                val colorTemperature = JsonObject()
+                colorTemperature.addProperty("value", result)
+                achievedState.add("colorTemperature", colorTemperature)
+                response.add("achievedState", achievedState)
+                return response
+            }
+            "decrementColorTemperature" -> {
+                val result = device.decrementColorTemperature()
+                if (device.isError) return null
+
+                val achievedState = JsonObject()
+                val colorTemperature = JsonObject()
+                colorTemperature.addProperty("value", result)
+                achievedState.add("colorTemperature", colorTemperature)
+                response.add("achievedState", achievedState)
+                return response
+            }
+            "incrementColorTemperature" -> {
+                val result = device.incrementColorTemperature()
+                if (device.isError) return null
+
+                val achievedState = JsonObject()
+                val colorTemperature = JsonObject()
+                colorTemperature.addProperty("value", result)
+                achievedState.add("colorTemperature", colorTemperature)
+                response.add("achievedState", achievedState)
+                return response
+            }
+            else -> return null
+        }
     }
 
     private fun executeTemperature(device: Temperature, payload: JsonObject): JsonObject? {
-        return null
+        val response = JsonObject()
+        when (methodName) {
+            "setTargetTemperature" -> {
+                val state = payload.get("targetTemperature") as JsonObject
+                val value = state.get("value").asFloat
+
+                val result=device.setTargetTemperature(value)
+                if (device.isError) return null
+
+                val targetTemperature=JsonObject()
+                targetTemperature.addProperty("value",result.actual.temp)
+                val temperatureMode=JsonObject()
+                temperatureMode.addProperty("value",result.actual.mode.name)
+                response.add("targetTemperature",targetTemperature)
+                response.add("temperatureMode",temperatureMode)
+                val previousState=JsonObject()
+                val prevTargetTemperature= JsonObject()
+                prevTargetTemperature.addProperty("value",result.previous.temp)
+                val prevTemperatureMode=JsonObject()
+                prevTemperatureMode.addProperty("value",result.previous.mode.name)
+                previousState.add("targetTemperature",prevTargetTemperature)
+                previousState.add("mode",prevTemperatureMode)
+                response.add("previousState",previousState)
+                return response
+            }
+            "incrementTargetTemperature" -> {
+                val state = payload.get("deltaTemperature") as JsonObject
+                val value = state.get("value").asFloat
+
+                val result=device.incrementTargetTemperature(value)
+                if (device.isError) return null
+
+                val targetTemperature=JsonObject()
+                targetTemperature.addProperty("value",result.actual.temp)
+                val temperatureMode=JsonObject()
+                temperatureMode.addProperty("value",result.actual.mode.name)
+                response.add("targetTemperature",targetTemperature)
+                response.add("temperatureMode",temperatureMode)
+                val previousState=JsonObject()
+                val prevTargetTemperature= JsonObject()
+                prevTargetTemperature.addProperty("value",result.previous.temp)
+                val prevTemperatureMode=JsonObject()
+                prevTemperatureMode.addProperty("value",result.previous.mode.name)
+                previousState.add("targetTemperature",prevTargetTemperature)
+                previousState.add("mode",prevTemperatureMode)
+                response.add("previousState",previousState)
+                return response
+            }
+            "decrementTargetTemperature" -> {
+                val state = payload.get("deltaTemperature") as JsonObject
+                val value = state.get("value").asFloat
+
+                val result=device.decrementTargetTemperature(value)
+                if (device.isError) return null
+
+                val targetTemperature=JsonObject()
+                targetTemperature.addProperty("value",result.actual.temp)
+                val temperatureMode=JsonObject()
+                temperatureMode.addProperty("value",result.actual.mode.name)
+                response.add("targetTemperature",targetTemperature)
+                response.add("temperatureMode",temperatureMode)
+                val previousState=JsonObject()
+                val prevTargetTemperature= JsonObject()
+                prevTargetTemperature.addProperty("value",result.previous.temp)
+                val prevTemperatureMode=JsonObject()
+                prevTemperatureMode.addProperty("value",result.previous.mode.name)
+                previousState.add("targetTemperature",prevTargetTemperature)
+                previousState.add("mode",prevTemperatureMode)
+                response.add("previousState",previousState)
+                return response
+            }
+            else -> return null
+        }
     }
 
     private fun executePercentage(device: Percentage, payload: JsonObject): JsonObject? {
-        return null
+        val response = JsonObject()
+        when (methodName) {
+            "decrementPercentage" -> {
+                val state = payload.get("deltaPercentage") as JsonObject
+                val value = state.get("value").asDouble
+                device.decrementPercentage(value)
+                if (device.isError) return null
+                return response
+            }
+            "incrementPercentage" -> {
+                val state = payload.get("deltaPercentage") as JsonObject
+                val value = state.get("value").asDouble
+                device.decrementPercentage(value)
+                if (device.isError) return null
+                return response
+            }
+            "setPercentage" -> {
+                val state = payload.get("percentageState") as JsonObject
+                val value = state.get("value").asDouble
+                device.decrementPercentage(value)
+                if (device.isError) return null
+                return response
+            }
+            else -> return null
+        }
     }
 
     private fun executeOnOff(device: OnOff, payload: JsonObject): JsonObject? {
@@ -83,10 +231,12 @@ class V2Executor(val plugin: V2Plugin, val type: String) {
         when (methodName) {
             "turnOn" -> {
                 device.turnOn()
+                if (device.isError) return null
                 return response
             }
             "turnOff" -> {
                 device.turnOff()
+                if (device.isError) return null
                 return response
             }
             else -> return null
@@ -94,7 +244,23 @@ class V2Executor(val plugin: V2Plugin, val type: String) {
     }
 
     private fun executeLockState(device: LockState, payload: JsonObject): JsonObject? {
-        return null
+        val response = JsonObject()
+        when (methodName) {
+            "getLockState" -> {
+                val state = device.getLockState()
+                if (device.isError) return null
+                response.addProperty("lockState", state.name)
+                return response
+            }
+            "setLockState" -> {
+                val value = payload.get("lockState").asString
+                val state = device.setLockState(LockState.Value.valueOf(value))
+                if (device.isError) return null
+                response.addProperty("lockState", state.name)
+                return response
+            }
+            else -> return null
+        }
     }
 
 

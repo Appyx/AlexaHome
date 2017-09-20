@@ -27,4 +27,9 @@ public abstract class DeviceV2Adapter implements DeviceV2 {
     public boolean isScene() {
         return false;
     }
+
+    @Override
+    public boolean isError() {
+        return false;
+    }
 }

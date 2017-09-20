@@ -1,17 +1,13 @@
 package at.rgstoettner.alexahome.manager
 
-import at.rgstoettner.alexahome.manager.controller.DeviceController
 import at.rgstoettner.alexahome.manager.controller.InstallController
 import at.rgstoettner.alexahome.manager.controller.UserController
 
 class App() {
 
     private val policy = mutableListOf<Triple<String, String, () -> Unit>>()
-
-    private val devicePolicy = mutableListOf<Triple<String, String, () -> Unit>>()
     private val adminPolicy = mutableListOf<Triple<String, String, () -> Unit>>()
     private val setupPolicy = mutableListOf<Triple<String, String, () -> Unit>>()
-    private val otherPolicy = mutableListOf<Triple<String, String, () -> Unit>>()
 
     init {
         setupPolicy.add(Triple("install", "Installs the base components", { InstallController().install() }))
@@ -21,14 +17,6 @@ class App() {
         adminPolicy.add(Triple("add user", "Adds a user", { UserController().add() }))
         adminPolicy.add(Triple("list users", "Lists all configured users", { UserController().list() }))
         adminPolicy.add(Triple("remove user", "Removes a user", { UserController().remove() }))
-
-        devicePolicy.add(Triple("add device", "Adds a device", { DeviceController().add() }))
-        devicePolicy.add(Triple("list devices", "List all devices", { DeviceController().list() }))
-        devicePolicy.add(Triple("edit device", "Edit a device", { DeviceController().edit() }))
-        devicePolicy.add(Triple("remove device", "Removes a device", { DeviceController().remove() }))
-        devicePolicy.add(Triple("wipe", "Removes everything", { DeviceController().wipe() }))
-
-        //otherPolicy.add(Triple("login", "RestManager to manage devices", { OtherController().login() }))
     }
 
     private fun formatPolicy(k: String, v: String) = "* %-20s - %s".format(k, v)
@@ -37,9 +25,6 @@ class App() {
         val b = StringBuilder()
         b.appendln("Welcome to the HomeManager (Admin-Mode).")
         b.appendln()
-//        b.appendln("Hello Stranger")
-//        b.appendln("You are not logged in!")
-//        b.appendln()
         b.appendln("Here you can set up the required components.")
         b.appendln("The following commands are available:")
         b.appendln()
@@ -51,68 +36,12 @@ class App() {
         b.appendln("--------------------------------------------------------")
         adminPolicy.forEach { (k, v, _) -> b.appendln(formatPolicy(k, v)) }
         b.appendln()
-//        b.appendln("Other")
-//        b.appendln("--------------------------------------------------------")
-//        otherPolicy.forEach { (k, v, _) -> b.appendln(formatPolicy(k, v)) }
-//        b.appendln()
         b.appendln("Each hello starts an assistant which guides you through the process.")
         b.append("Enter a hello:")
         b.toString().println()
 
         policy.addAll(setupPolicy)
         policy.addAll(adminPolicy)
-        //policy.addAll(otherPolicy)
-    }
-
-//    fun handleAdminMode(settings: Settings) {
-//        val b = StringBuilder()
-//        b.appendln("Welcome to the HomeManager (Admin-Mode).")
-//        b.appendln()
-//        b.appendln("Hello ${settings.user}!")
-//        b.appendln("You are logged in to your personal skill at ${RestManager.instance.host}:${RestManager.instance.port}")
-//        b.appendln()
-//        b.appendln("Here you can manage your users/devices.")
-//        b.appendln("The following commands are available:")
-//        b.appendln()
-//        b.appendln("Setup")
-//        b.appendln("--------------------------------------------------------")
-//        setupPolicy.forEach { (k, v, _) -> b.appendln(formatPolicy(k, v)) }
-//        b.appendln()
-//        b.appendln("User Management")
-//        b.appendln("--------------------------------------------------------")
-//        adminPolicy.forEach { (k, v, _) -> b.appendln(formatPolicy(k, v)) }
-//        b.appendln()
-//        b.appendln("Device Management")
-//        b.appendln("--------------------------------------------------------")
-//        devicePolicy.forEach { (k, v, _) -> b.appendln(formatPolicy(k, v)) }
-//        b.appendln("Each hello starts an assistant which guides you through the process.")
-//        b.append("Enter a hello:")
-//        b.toString().println()
-//
-//        policy.addAll(setupPolicy)
-//        policy.addAll(adminPolicy)
-//        policy.addAll(devicePolicy)
-//        policy.addAll(otherPolicy)
-//    }
-
-    fun handleUserMode(settings: Settings) {
-        val b = StringBuilder()
-        b.appendln("Welcome to the HomeManager (User-Mode).")
-        b.appendln()
-        b.appendln("Hello ${settings.user}!")
-        b.appendln("You are logged in to your personal skill at ${skill.host}:${skill.port}")
-        b.appendln()
-        b.appendln("Here you can manage your devices.")
-        b.appendln("The following commands are available:")
-        b.appendln()
-        b.appendln("Device Management")
-        b.appendln("--------------------------------------------------------")
-        devicePolicy.forEach { (k, v, _) -> b.appendln(formatPolicy(k, v)) }
-        b.appendln("Each hello starts an assistant which guides you through the process.")
-        b.append("Enter a hello:")
-        b.toString().println()
-
-        policy.addAll(devicePolicy)
     }
 
     fun execute(line: String) {
@@ -123,7 +52,6 @@ class App() {
                 invoked = true
             }
         }
-
         if (!invoked) {
             handleFatalError(CliError.ARGUMENTS_NOT_SUPPORTED)
         }

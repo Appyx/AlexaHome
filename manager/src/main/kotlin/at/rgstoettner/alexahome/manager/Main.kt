@@ -3,35 +3,10 @@ package at.rgstoettner.alexahome.manager
 import kotlin.system.exitProcess
 
 
-val skill = RestManager()
-
 fun main(args: Array<String>) {
     val app = App()
-    val settings = Settings.load()
-
-    var isLocal = false
     val arguments = args.toMutableList()
-    args.forEach {
-        if (it.startsWith("--local")) {
-            arguments.remove(it)
-            isLocal = true
-        }
-    }
-
-    if (settings != null) { //not ready to connect devices
-        when (settings.role) {
-//            "admin" -> {
-//                RestManager.instance.connect(settings) //blocking connect
-//                app.handleAdminMode(settings)
-//            }
-            "user" -> {
-                skill.connect(settings, isLocal) //blocking connect
-                app.handleUserMode(settings)
-            }
-        }
-    } else {
-        app.handleAdminMode()
-    }
+    app.handleAdminMode()
 
     var line = ""
     if (arguments.isEmpty()) {

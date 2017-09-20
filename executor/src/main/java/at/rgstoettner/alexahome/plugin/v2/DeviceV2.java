@@ -17,6 +17,15 @@ public interface DeviceV2 {
      */
     boolean isScene();
 
+
+    /**
+     * A boolean indicating whether the current execution failed.
+     * This will be called only right after the execution.
+     *
+     * @return True if an error occurred, False otherwise.
+     */
+    boolean isError();
+
     /**
      * The description is visible in the Alexa-App below the name of the device.
      *

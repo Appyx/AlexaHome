@@ -1,4 +1,4 @@
-package at.rgstoettner.alexahome.skill.endpoints.rest.v2.shared
+package at.rgstoettner.alexahome.skill.endpoints.rest.v2
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.util.*

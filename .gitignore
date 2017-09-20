@@ -4,6 +4,7 @@
 .gradle/
 gradle/
 build/
+out/
 
 !gradle-wrapper.jar
 

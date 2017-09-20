@@ -1,9 +1,9 @@
 package at.rgstoettner.alexahome.skill.endpoints.rest
 
-import at.rgstoettner.alexahome.skill.endpoints.rest.v2.control.Control
-import at.rgstoettner.alexahome.skill.endpoints.rest.v2.discovery.Discovery
-import at.rgstoettner.alexahome.skill.endpoints.rest.v2.query.Query
-import at.rgstoettner.alexahome.skill.endpoints.rest.v2.shared.Header
+import at.rgstoettner.alexahome.skill.endpoints.rest.v2.Control
+import at.rgstoettner.alexahome.skill.endpoints.rest.v2.Discovery
+import at.rgstoettner.alexahome.skill.endpoints.rest.v2.Query
+import at.rgstoettner.alexahome.skill.endpoints.rest.v2.Header
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
@@ -25,6 +25,7 @@ class LambdaController {
     private lateinit var control: Control
     @Autowired
     private lateinit var query: Query
+
 
     @RequestMapping(value = "/", method = arrayOf(RequestMethod.POST))
     fun handleCloudFunction(@RequestBody json: JsonNode): String {

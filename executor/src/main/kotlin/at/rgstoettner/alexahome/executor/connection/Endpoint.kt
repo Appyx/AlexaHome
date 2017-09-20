@@ -26,7 +26,7 @@ class Endpoint(url: String, timeout: Int) : WebSocketClient(URI(url), Draft_6455
     }
 
     override fun onMessage(message: String) {
-        "Message received: $message".println()
+        "ExecutorMessage received: $message".println()
         val response = onMessageHandler.invoke(message)
         send(response)
     }

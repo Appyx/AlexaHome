@@ -14,11 +14,22 @@ class MessageHandler(val socket: ReconnectingSocket, val loader: PluginLoader) {
 
         }, onMessage = { request ->
             val message = gson.fromJson(request, JsonObject::class.java)
+            println(message.toString())
             var response = "{}"
-            if (message.get("type").asString == "discover") {
+            if (message.get("type").asString == "DISCOVER") {
                 loader.loadPlugins()
                 val devices = loader.v2Plugins.map { it.amazonDevice }
-                response = gson.toJson(devices)
+                val responseObject = JsonObject()
+                responseObject.addProperty("type", "DISCOVER")
+                responseObject.addProperty("name", "DiscoverAppliancesResponse")
+                responseObject.addProperty("deviceReached", true)
+                responseObject.add("payload", gson.toJsonTree(devices))
+                response = gson.toJson(responseObject)
+            } else {
+                val responseObject = JsonObject()
+                responseObject.addProperty("deviceReached", true)
+                responseObject.addProperty("error", "UnsupportedOperationError")
+                response = gson.toJson(responseObject)
             }
             response
         })

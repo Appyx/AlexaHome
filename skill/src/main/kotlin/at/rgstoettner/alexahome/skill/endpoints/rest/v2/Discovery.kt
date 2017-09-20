@@ -4,30 +4,27 @@ import at.rgstoettner.alexahome.skill.endpoints.websocket.ExecutorController
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 
 @Component
 class Discovery {
-    private val logger = LoggerFactory.getLogger(this.javaClass)
     @Autowired
     private lateinit var executor: ExecutorController
     private val mapper = ObjectMapper()
 
-    fun handleRequest(header: Header, payload: JsonNode): String {
+    fun handleRequest(header: AmazonHeader, payload: JsonNode): String {
         val id = header.name
-        val message = executor.discover(id)
-        var devices = mapper.nodeFactory.arrayNode()
-        if (message.payload != null) {
-            devices = message.payload as ArrayNode
-        }
-        val appliances = mapper.nodeFactory.objectNode()
-        val array = appliances.putArray("discoveredAppliances")
-        array.addAll(devices)
+        val message = executor.discoverDevices(id)
+        val devices = message.payload as ArrayNode
 
-        val response = LambdaMessage(header.namespace, message.name!!, appliances)
+        //cannot simply return the devices, they need to be wrapped inside a special tag
+        val discoveredAppliances = mapper.nodeFactory.objectNode()
+        val devicesNode = discoveredAppliances.putArray("discoveredAppliances")
+        devicesNode.addAll(devices)
+
+        val response = AmazonMessage(header.namespace, message.name!!, discoveredAppliances)
         return mapper.writeValueAsString(response)
     }
 }

@@ -3,7 +3,7 @@ package at.rgstoettner.alexahome.skill.endpoints.rest
 import at.rgstoettner.alexahome.skill.endpoints.rest.v2.Control
 import at.rgstoettner.alexahome.skill.endpoints.rest.v2.Discovery
 import at.rgstoettner.alexahome.skill.endpoints.rest.v2.Query
-import at.rgstoettner.alexahome.skill.endpoints.rest.v2.Header
+import at.rgstoettner.alexahome.skill.endpoints.rest.v2.AmazonHeader
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.LoggerFactory
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class LambdaController {
-
     private val logger = LoggerFactory.getLogger(this.javaClass)
 
     @Autowired
@@ -36,7 +35,7 @@ class LambdaController {
         val headerNode = json.get("header")
         val payloadNode = json.get("payload")
         if (headerNode != null && payloadNode != null) {
-            val header = mapper.convertValue(headerNode, Header::class.java)
+            val header = mapper.convertValue(headerNode, AmazonHeader::class.java)
             when (header.payloadVersion) {
                 2 -> when (header.namespace) {
                     "Alexa.ConnectedHome.Discovery" -> result = discovery.handleRequest(header, payloadNode)

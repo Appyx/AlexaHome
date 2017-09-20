@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationContextAware
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.io.ClassPathResource
 import org.springframework.web.socket.config.annotation.EnableWebSocket
@@ -29,20 +27,12 @@ fun main(args: Array<String>) {
 }
 
 @SpringBootApplication
-class SkillApplication : ApplicationContextAware {
-    companion object {
-        lateinit var context: ApplicationContext
-    }
-
-    override fun setApplicationContext(applicationContext: ApplicationContext) {
-        context = applicationContext
-    }
-}
+class SkillApplication
 
 
 @Configuration
 @EnableWebSocket
-class WebsocketConfig : WebSocketConfigurer {
+class WebSocketConfig : WebSocketConfigurer {
 
     @Autowired
     lateinit var executorController: ExecutorController

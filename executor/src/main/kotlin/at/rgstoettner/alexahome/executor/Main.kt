@@ -23,7 +23,7 @@ fun main(args: Array<String>) {
     val settings = Settings.load()
     val socket = ReconnectingSocket(settings, isLocal)
     val messageHandler=MessageHandler(socket,pluginLoader)
-    messageHandler.connect()
+    messageHandler.handle()
 
     synchronized(lock) {
         lock.wait()

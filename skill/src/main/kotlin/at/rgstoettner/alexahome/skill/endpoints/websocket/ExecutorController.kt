@@ -3,7 +3,7 @@ package at.rgstoettner.alexahome.skill.endpoints.websocket
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.socket.CloseStatus
 import org.springframework.web.socket.TextMessage
@@ -12,9 +12,9 @@ import org.springframework.web.socket.handler.TextWebSocketHandler
 
 @Configuration
 class ExecutorController : TextWebSocketHandler() {
+    private var logger = LoggerFactory.getLogger(this::class.java)
     private val clients = mutableListOf<ExecutorClient>()
     private val mapper = ObjectMapper()
-
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus?) {
         val client = clients.find { it.session == session }
@@ -31,12 +31,19 @@ class ExecutorController : TextWebSocketHandler() {
         client?.onMessage(textMessage.payload)
     }
 
-    fun discover(name: String): ExecutorMessage {
+    /**
+     * Sends the name to all devices.
+     *
+     * @return The message containing an array of discovered devices.
+     * If none are found it simply returns a message with an empty array.
+     */
+    fun discoverDevices(name: String): ExecutorMessage {
         val devices = mapper.nodeFactory.arrayNode()
         var newMessage = ExecutorMessage("DiscoverAppliancesResponse")
         clients.forEach {
             val message = it.discover(name)
             val arrayNode = mapper.convertValue(message.payload, ArrayNode::class.java)
+            logger.info("Discovered ${arrayNode.count()} devices at: ${it.host}")
             devices.addAll(arrayNode)
             newMessage = message
         }
@@ -44,24 +51,48 @@ class ExecutorController : TextWebSocketHandler() {
         return newMessage
     }
 
-    fun query(name: String, payload: JsonNode?): ExecutorMessage? {
+    /**
+     * Sends the name and payload to all devices.
+     * If a device can handle it, it has to set the "executed" flag to true.
+     * This method returns the message that has the first "executed" flag set to true.
+     *
+     * @return The Message which contains the response payload or an error if no device was executed.
+     */
+    fun queryDevices(name: String, payload: JsonNode): ExecutorMessage {
         clients.forEach {
-            val message = it.control(name, payload)
-            if (message.deviceReached) {
+            val message = it.query(name, payload)
+            if (message.executed) {
+                logger.info("Executed at: ${it.host}")
                 return message
             }
         }
-        return null
+        if (clients.size == 0) {
+            return ExecutorMessage("BridgeOfflineError")
+        } else {
+            return ExecutorMessage("NoSuchTargetError")
+        }
     }
 
-    fun controlDevice(name: String, payload: JsonNode?): ExecutorMessage? {
+    /**
+     * Sends the name and payload to all devices.
+     * If a device can handle it, it has to set the "executed" flag to true.
+     * This method returns the message that has the first "executed" flag set to true.
+     *
+     * The Message which contains the response payload or an error if no device was executed.
+     */
+    fun controlDevices(name: String, payload: JsonNode): ExecutorMessage {
         clients.forEach {
             val message = it.control(name, payload)
-            if (message.deviceReached) {
+            if (message.executed) {
+                logger.info("Executed at: ${it.host}")
                 return message
             }
         }
-        return null
+        if (clients.size == 0) {
+            return ExecutorMessage("BridgeOfflineError")
+        } else {
+            return ExecutorMessage("NoSuchTargetError")
+        }
     }
 
 

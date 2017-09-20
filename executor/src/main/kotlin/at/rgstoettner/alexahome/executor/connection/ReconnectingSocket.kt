@@ -31,7 +31,6 @@ class ReconnectingSocket(val settings: Settings, val local: Boolean) {
         onMessageHandler = onMessage
         onReadyHandler = onReady
 
-        "Connecting to: $host:$port".println()
         endpoint = createEndpoint()
         endpoint?.connect()
     }

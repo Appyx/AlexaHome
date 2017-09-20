@@ -37,18 +37,18 @@ class V2Loader(val pluginDir: File) {
                 || device.description == null
                 || device.manufacturer == null
                 || device.model == null
-                || device.softwareVersion == null
-                || device.type == null) {
+                || device.softwareVersion == null) {
             return null
         }
-        val plugin = V2Plugin()
+        val plugin = V2Plugin(device)
         plugin.amazonDevice.applianceId = device.name.hashCode().toString()
         plugin.amazonDevice.friendlyName = device.name
         plugin.amazonDevice.friendlyDescription = device.description
         plugin.amazonDevice.manufacturerName = device.manufacturer
         plugin.amazonDevice.modelName = device.model
         plugin.amazonDevice.version = device.softwareVersion
-        plugin.amazonDevice.applianceTypes = arrayListOf(device.type)
+        val type=if(device.isScene)"ACTIVITY_TRIGGER" else "SMARTPLUG"
+        plugin.amazonDevice.applianceTypes = arrayListOf(type)
         plugin.amazonDevice.actions = getCapabilities(device)
         return plugin
     }

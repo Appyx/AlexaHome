@@ -1,7 +1,6 @@
 package at.rgstoettner.alexahome.plugin.v2;
 
 public interface DeviceV2 {
-    String getAlias();
 
     /**
      * This method should return a unique name across all devices.
@@ -12,28 +11,17 @@ public interface DeviceV2 {
     String getName();
 
     /**
-     * CAMERA<br>
-     * Indicates media devices with video or photo capabilities.
-     * <p>
-     * LIGHT<br>
-     * Indicates light sources or fixtures.
-     * <p>
-     * SMARTLOCK<br>
-     * Indicates door locks.
-     * <p>
-     * SMARTPLUG<br>
-     * Indicates modules that are plugged into an existing electrical outlet.	Can control a variety of devices.
-     * <p>
-     * SWITCH<br>
-     * Indicates in-wall switches wired to the electrical system.	Can control a variety of devices.
-     * <p>
-     * THERMOSTAT<br>
-     * Indicates thermostats that control temperature, stand-alone air conditioners, or heaters with direct temperature control.<br>
+     * Determines whether this device should be shown under scenes in the Alexa-App
      *
-     * @return a string containing one of the types
+     * @return True if this device should be treated as a scene, False otherwise.
      */
-    String getType();
+    boolean isScene();
 
+    /**
+     * The description is visible in the Alexa-App below the name of the device.
+     *
+     * @return A String describing the device.
+     */
     String getDescription();
 
     String getManufacturer();

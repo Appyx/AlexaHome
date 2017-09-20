@@ -2,10 +2,6 @@ package at.rgstoettner.alexahome.plugin.v2;
 
 public abstract class DeviceV2Adapter implements DeviceV2 {
 
-    @Override
-    public String getAlias() {
-        return null;
-    }
 
     @Override
     public String getManufacturer() {
@@ -25,5 +21,10 @@ public abstract class DeviceV2Adapter implements DeviceV2 {
     @Override
     public String getDescription() {
         return "No Description";
+    }
+
+    @Override
+    public boolean isScene() {
+        return false;
     }
 }

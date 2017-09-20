@@ -7,7 +7,7 @@ import org.java_websocket.handshake.ServerHandshake
 import java.lang.Exception
 import java.net.URI
 
-class Endpoint(url: String, timeout: Int) : WebSocketClient(URI(url), Draft_6455(), null, timeout) {
+class Endpoint(val url: String, timeout: Int) : WebSocketClient(URI(url), Draft_6455(), null, timeout) {
 
     var onOpenHandler: () -> Unit = {}
     var onClosedHandler: () -> Unit = {}
@@ -15,19 +15,20 @@ class Endpoint(url: String, timeout: Int) : WebSocketClient(URI(url), Draft_6455
     var onMessageHandler: (String) -> String = { "" }
 
     override fun onOpen(handshakedata: ServerHandshake) {
-        "Socket opened".println()
+        "Connected to: $url".println()
         onOpenHandler.invoke()
     }
 
     override fun onClose(code: Int, reason: String, remote: Boolean) {
-        "Socket closed (code $code ,reason: $reason)".println()
+        "Disconnected: $reason".println()
         onClosedHandler.invoke()
         destroy()
     }
 
     override fun onMessage(message: String) {
-        "ExecutorMessage received: $message".println()
+        "Message received: $message".println()
         val response = onMessageHandler.invoke(message)
+        "Message sent: $response".println()
         send(response)
     }
 

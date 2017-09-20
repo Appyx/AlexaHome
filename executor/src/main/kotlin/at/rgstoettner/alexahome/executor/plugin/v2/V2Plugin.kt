@@ -1,7 +1,8 @@
 package at.rgstoettner.alexahome.executor.plugin.v2
 
-class V2Plugin {
+import at.rgstoettner.alexahome.plugin.v2.DeviceV2
 
+class V2Plugin(val device: DeviceV2) {
     val amazonDevice = AmazonDevice()
 
     class AmazonDevice() {

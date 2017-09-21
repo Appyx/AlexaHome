@@ -44,10 +44,10 @@ You also get features which you won't get with the 'blank' Amazon API.
 * No need to write an AWS Lambda Function
 * No need to compile or clone anything related with AlexaHome
 * Automatic error handling (Alexa responds with the right errors by default)
-* Host the actual Skill anywhere you want (home,remote server,amazon...).
+* Host the actual Skill anywhere you want (home,remote server,Amazon...).
 * Ongoing development under the hood. (So once a new API is available you just use other interfaces in your Java/Kotlin code)
 
-And all is free (you still one credit card for the AWS account, but there is a free tier which should last a while)
+And all is free (you still need one credit card for the AWS account, but there is a free tier which should last a while)
 
 
 ### How to start?

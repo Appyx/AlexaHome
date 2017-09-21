@@ -50,7 +50,7 @@ You also get features which you won't get with the 'blank' Amazon API.
 And all is free (you still one credit card for the AWS account, but there is a free tier which should last a while)
 
 
-### How do to start?
+### How to start?
 
 Take a look at the [Wiki](https://github.com/Appyx/AlexaHome/wiki) for instructions.
 

@@ -1,6 +1,6 @@
 package at.rgstoettner.alexahome.plugin.v2;
 
-public interface Percentage extends DeviceV2 {
+public interface Percentage extends V2Device {
 
     /**
      * “Alexa, decrease device name by number percent”

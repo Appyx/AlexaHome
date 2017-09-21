@@ -6,7 +6,7 @@ import kotlin.system.exitProcess
 fun main(args: Array<String>) {
     val app = App()
     val arguments = args.toMutableList()
-    app.handleAdminMode()
+    app.setup(arguments.isEmpty())
 
     var line = ""
     if (arguments.isEmpty()) {

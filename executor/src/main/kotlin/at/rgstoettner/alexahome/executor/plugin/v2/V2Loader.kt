@@ -19,8 +19,13 @@ class V2Loader(val pluginDir: File) {
             println("Adding: ${it.path}")
         }
         val classLoader = URLClassLoader.newInstance(jars.toTypedArray())
-        val loader = ServiceLoader.load(DeviceV2::class.java, classLoader)
-        loader.forEach { device ->
+        val deviceLoader = ServiceLoader.load(V2Device::class.java, classLoader)
+        val providerLoader = ServiceLoader.load(V2DeviceProvider::class.java, classLoader)
+
+        val devices = deviceLoader.toMutableList()
+        devices.addAll(providerLoader.toList().flatMap { it.devices })
+
+        devices.forEach { device ->
             val plugin = configurePlugin(device)
             if (plugin != null) {
                 plugins.add(plugin)
@@ -29,10 +34,11 @@ class V2Loader(val pluginDir: File) {
                 println("Plugin is missing required information")
             }
         }
+
         return plugins
     }
 
-    private fun configurePlugin(device: DeviceV2): V2Plugin? {
+    private fun configurePlugin(device: V2Device): V2Plugin? {
         if (device.name == null
                 || device.description == null
                 || device.manufacturer == null
@@ -47,14 +53,14 @@ class V2Loader(val pluginDir: File) {
         plugin.amazonDevice.manufacturerName = device.manufacturer
         plugin.amazonDevice.modelName = device.model
         plugin.amazonDevice.version = device.softwareVersion
-        val type=if(device.isScene)"ACTIVITY_TRIGGER" else "SMARTPLUG"
+        val type = if (device.isScene) "ACTIVITY_TRIGGER" else "SMARTPLUG"
         plugin.amazonDevice.applianceTypes = arrayListOf(type)
         plugin.amazonDevice.actions = getCapabilities(device)
         return plugin
     }
 
 
-    private fun getCapabilities(deviceV2: DeviceV2): List<String> {
+    private fun getCapabilities(deviceV2: V2Device): List<String> {
         val capabilities = mutableListOf<String>()
         val clazz = deviceV2::class.java
         if (clazz.interfaces.contains(Lighting::class.java)) {

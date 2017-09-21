@@ -1,6 +1,6 @@
 package at.rgstoettner.alexahome.plugin.v2;
 
-public interface Lighting extends DeviceV2 {
+public interface Lighting extends V2Device {
     /**
      * Example Utterances:<br>
      * “Alexa, set the device name to color”<br>

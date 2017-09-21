@@ -1,6 +1,6 @@
 package at.rgstoettner.alexahome.plugin.v2;
 
-public interface LockState extends DeviceV2 {
+public interface LockState extends V2Device {
 
 
     /**

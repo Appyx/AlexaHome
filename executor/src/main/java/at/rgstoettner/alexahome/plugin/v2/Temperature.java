@@ -1,6 +1,6 @@
 package at.rgstoettner.alexahome.plugin.v2;
 
-public interface Temperature extends DeviceV2 {
+public interface Temperature extends V2Device {
 
     /**
      * Example Utterances: <br>

@@ -1,6 +1,6 @@
 package at.rgstoettner.alexahome.plugin.v2;
 
-public interface OnOff extends DeviceV2{
+public interface OnOff extends V2Device {
 
     /**
      * “Alexa, turn on the device name”<br>

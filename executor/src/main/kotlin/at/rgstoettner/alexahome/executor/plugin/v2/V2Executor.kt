@@ -75,7 +75,7 @@ class V2Executor(val plugin: V2Plugin, val type: String) {
                 val value = gson.fromJson(wrapper, Lighting.Color::class.java)
 
                 val result = device.setColor(value)
-                if (device.isError) return null
+                if (device.isError || result == null) return null
 
                 val achievedState = JsonObject()
                 achievedState.add("color", gson.toJsonTree(result))
@@ -129,69 +129,69 @@ class V2Executor(val plugin: V2Plugin, val type: String) {
                 val state = payload.get("targetTemperature") as JsonObject
                 val value = state.get("value").asFloat
 
-                val result=device.setTargetTemperature(value)
-                if (device.isError) return null
+                val result = device.setTargetTemperature(value)
+                if (device.isError || result == null) return null
 
-                val targetTemperature=JsonObject()
-                targetTemperature.addProperty("value",result.actual.temp)
-                val temperatureMode=JsonObject()
-                temperatureMode.addProperty("value",result.actual.mode.name)
-                response.add("targetTemperature",targetTemperature)
-                response.add("temperatureMode",temperatureMode)
-                val previousState=JsonObject()
-                val prevTargetTemperature= JsonObject()
-                prevTargetTemperature.addProperty("value",result.previous.temp)
-                val prevTemperatureMode=JsonObject()
-                prevTemperatureMode.addProperty("value",result.previous.mode.name)
-                previousState.add("targetTemperature",prevTargetTemperature)
-                previousState.add("mode",prevTemperatureMode)
-                response.add("previousState",previousState)
+                val targetTemperature = JsonObject()
+                targetTemperature.addProperty("value", result.actual.temp)
+                val temperatureMode = JsonObject()
+                temperatureMode.addProperty("value", result.actual.mode.name)
+                response.add("targetTemperature", targetTemperature)
+                response.add("temperatureMode", temperatureMode)
+                val previousState = JsonObject()
+                val prevTargetTemperature = JsonObject()
+                prevTargetTemperature.addProperty("value", result.previous.temp)
+                val prevTemperatureMode = JsonObject()
+                prevTemperatureMode.addProperty("value", result.previous.mode.name)
+                previousState.add("targetTemperature", prevTargetTemperature)
+                previousState.add("mode", prevTemperatureMode)
+                response.add("previousState", previousState)
                 return response
             }
             "incrementTargetTemperature" -> {
                 val state = payload.get("deltaTemperature") as JsonObject
                 val value = state.get("value").asFloat
 
-                val result=device.incrementTargetTemperature(value)
-                if (device.isError) return null
+                val result = device.incrementTargetTemperature(value)
+                if (device.isError || result == null) return null
 
-                val targetTemperature=JsonObject()
-                targetTemperature.addProperty("value",result.actual.temp)
-                val temperatureMode=JsonObject()
-                temperatureMode.addProperty("value",result.actual.mode.name)
-                response.add("targetTemperature",targetTemperature)
-                response.add("temperatureMode",temperatureMode)
-                val previousState=JsonObject()
-                val prevTargetTemperature= JsonObject()
-                prevTargetTemperature.addProperty("value",result.previous.temp)
-                val prevTemperatureMode=JsonObject()
-                prevTemperatureMode.addProperty("value",result.previous.mode.name)
-                previousState.add("targetTemperature",prevTargetTemperature)
-                previousState.add("mode",prevTemperatureMode)
-                response.add("previousState",previousState)
+                val targetTemperature = JsonObject()
+                targetTemperature.addProperty("value", result.actual.temp)
+                val temperatureMode = JsonObject()
+                temperatureMode.addProperty("value", result.actual.mode.name)
+                response.add("targetTemperature", targetTemperature)
+                response.add("temperatureMode", temperatureMode)
+                val previousState = JsonObject()
+                val prevTargetTemperature = JsonObject()
+                prevTargetTemperature.addProperty("value", result.previous.temp)
+                val prevTemperatureMode = JsonObject()
+                prevTemperatureMode.addProperty("value", result.previous.mode.name)
+                previousState.add("targetTemperature", prevTargetTemperature)
+                previousState.add("mode", prevTemperatureMode)
+                response.add("previousState", previousState)
                 return response
             }
             "decrementTargetTemperature" -> {
                 val state = payload.get("deltaTemperature") as JsonObject
                 val value = state.get("value").asFloat
 
-                val result=device.decrementTargetTemperature(value)
-                if (device.isError) return null
+                val result = device.decrementTargetTemperature(value)
+                if (device.isError || result == null) return null
 
-                val targetTemperature=JsonObject()
-                targetTemperature.addProperty("value",result.actual.temp)
-                val temperatureMode=JsonObject()
-                temperatureMode.addProperty("value",result.actual.mode.name)
-                response.add("targetTemperature",targetTemperature)
-                response.add("temperatureMode",temperatureMode)
-                val previousState=JsonObject()
-                val prevTargetTemperature= JsonObject()
-                prevTargetTemperature.addProperty("value",result.previous.temp)
-                val prevTemperatureMode=JsonObject()
-                prevTemperatureMode.addProperty("value",result.previous.mode.name)
-                previousState.add("targetTemperature",prevTargetTemperature)
-                previousState.add("mode",prevTemperatureMode)
-                response.add("previousState",previousState)
+                val targetTemperature = JsonObject()
+                targetTemperature.addProperty("value", result.actual.temp)
+                val temperatureMode = JsonObject()
+                temperatureMode.addProperty("value", result.actual.mode.name)
+                response.add("targetTemperature", targetTemperature)
+                response.add("temperatureMode", temperatureMode)
+                val previousState = JsonObject()
+                val prevTargetTemperature = JsonObject()
+                prevTargetTemperature.addProperty("value", result.previous.temp)
+                val prevTemperatureMode = JsonObject()
+                prevTemperatureMode.addProperty("value", result.previous.mode.name)
+                previousState.add("targetTemperature", prevTargetTemperature)
+                previousState.add("mode", prevTemperatureMode)
+                response.add("previousState", previousState)
                 return response
             }
             else -> return null
@@ -247,16 +247,16 @@ class V2Executor(val plugin: V2Plugin, val type: String) {
         val response = JsonObject()
         when (methodName) {
             "getLockState" -> {
-                val state = device.getLockState()
-                if (device.isError) return null
-                response.addProperty("lockState", state.name)
+                val result = device.getLockState()
+                if (device.isError || result == null) return null
+                response.addProperty("lockState", result.name)
                 return response
             }
             "setLockState" -> {
                 val value = payload.get("lockState").asString
-                val state = device.setLockState(LockState.Value.valueOf(value))
-                if (device.isError) return null
-                response.addProperty("lockState", state.name)
+                val result = device.setLockState(LockState.Value.valueOf(value))
+                if (device.isError || result == null) return null
+                response.addProperty("lockState", result.name)
                 return response
             }
             else -> return null

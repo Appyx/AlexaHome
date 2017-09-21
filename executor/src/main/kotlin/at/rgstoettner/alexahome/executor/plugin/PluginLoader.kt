@@ -4,7 +4,7 @@ import at.rgstoettner.alexahome.executor.plugin.v2.V2Loader
 import at.rgstoettner.alexahome.executor.plugin.v2.V2Plugin
 import java.io.File
 
-class PluginLoader(path: String?, loadDefault: Boolean = true) {
+class PluginLoader(val path: String?, loadDefault: Boolean = true) {
     private val pluginDir: File
     var v2Plugins = listOf<V2Plugin>()
 
@@ -19,9 +19,9 @@ class PluginLoader(path: String?, loadDefault: Boolean = true) {
             pluginDir.mkdirs()
         }
 
-        if (loadDefault) {
-            addDefaultPlugins("AlexaHomePlugins.jar")
-        }
+//        if (loadDefault) {
+//            addDefaultPlugins("AlexaHomePlugins.jar")
+//        }
     }
 
     private fun addDefaultPlugins(vararg names: String) {
@@ -40,6 +40,10 @@ class PluginLoader(path: String?, loadDefault: Boolean = true) {
 
     fun loadPlugins() {
         v2Plugins = V2Loader(pluginDir).load()
+
+        if (v2Plugins.isEmpty()) {
+            println("No plugins found inside ${pluginDir.absolutePath}")
+        }
     }
 
 

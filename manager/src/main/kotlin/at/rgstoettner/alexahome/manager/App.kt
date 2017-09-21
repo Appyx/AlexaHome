@@ -21,25 +21,26 @@ class App() {
 
     private fun formatPolicy(k: String, v: String) = "* %-20s - %s".format(k, v)
 
-    fun handleAdminMode() {
-        val b = StringBuilder()
-        b.appendln("Welcome to the HomeManager (Admin-Mode).")
-        b.appendln()
-        b.appendln("Here you can set up the required components.")
-        b.appendln("The following commands are available:")
-        b.appendln()
-        b.appendln("Setup")
-        b.appendln("--------------------------------------------------------")
-        setupPolicy.forEach { (k, v, _) -> b.appendln(formatPolicy(k, v)) }
-        b.appendln()
-        b.appendln("User Management")
-        b.appendln("--------------------------------------------------------")
-        adminPolicy.forEach { (k, v, _) -> b.appendln(formatPolicy(k, v)) }
-        b.appendln()
-        b.appendln("Each hello starts an assistant which guides you through the process.")
-        b.append("Enter a hello:")
-        b.toString().println()
-
+    fun setup(showUi: Boolean = true) {
+        if (showUi) {
+            val b = StringBuilder()
+            b.appendln("Welcome to the HomeManager.")
+            b.appendln()
+            b.appendln("Here you can set up the required components.")
+            b.appendln("The following commands are available:")
+            b.appendln()
+            b.appendln("Setup")
+            b.appendln("--------------------------------------------------------")
+            setupPolicy.forEach { (k, v, _) -> b.appendln(formatPolicy(k, v)) }
+            b.appendln()
+            b.appendln("User Management")
+            b.appendln("--------------------------------------------------------")
+            adminPolicy.forEach { (k, v, _) -> b.appendln(formatPolicy(k, v)) }
+            b.appendln()
+            b.appendln("Each command starts an assistant which guides you through the process.")
+            b.append("Enter a command:")
+            b.toString().println()
+        }
         policy.addAll(setupPolicy)
         policy.addAll(adminPolicy)
     }

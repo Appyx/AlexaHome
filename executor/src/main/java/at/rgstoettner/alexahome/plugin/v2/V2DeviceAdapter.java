@@ -1,6 +1,6 @@
 package at.rgstoettner.alexahome.plugin.v2;
 
-public abstract class DeviceV2Adapter implements DeviceV2 {
+public abstract class V2DeviceAdapter implements V2Device {
 
 
     @Override

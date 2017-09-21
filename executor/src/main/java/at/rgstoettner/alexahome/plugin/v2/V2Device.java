@@ -1,6 +1,6 @@
 package at.rgstoettner.alexahome.plugin.v2;
 
-public interface DeviceV2 {
+public interface V2Device {
 
     /**
      * This method should return a unique name across all devices.

@@ -21,17 +21,19 @@ class V2Loader(val pluginDir: File) {
         val classLoader = URLClassLoader.newInstance(jars.toTypedArray())
         val deviceLoader = ServiceLoader.load(V2Device::class.java, classLoader)
         val providerLoader = ServiceLoader.load(V2DeviceProvider::class.java, classLoader)
+        val providers = providerLoader.toList()
+        println("Found ${providers.size} providers")
 
         val devices = deviceLoader.toMutableList()
-        devices.addAll(providerLoader.toList().flatMap { it.devices })
+        devices.addAll(providers.flatMap { it.devices })
 
         devices.forEach { device ->
             val plugin = configurePlugin(device)
             if (plugin != null) {
                 plugins.add(plugin)
-                println("Loaded plugin: ${device.name}")
+                println("Loaded device: ${device.name}")
             } else {
-                println("Plugin is missing required information")
+                println("Device is missing required information")
             }
         }
 

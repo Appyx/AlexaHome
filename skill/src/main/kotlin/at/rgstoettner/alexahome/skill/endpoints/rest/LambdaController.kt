@@ -28,7 +28,7 @@ class LambdaController {
 
     @RequestMapping(value = "/", method = arrayOf(RequestMethod.POST))
     fun handleCloudFunction(@RequestBody json: JsonNode): String {
-        logger.info("REQUEST: $json")
+        //logger.info("REQUEST: $json")
         val mapper = ObjectMapper()
 
         var result = "{}"
@@ -45,7 +45,7 @@ class LambdaController {
                 else -> logger.warn("Payload version ${header.payloadVersion} is not supported")
             }
         }
-        logger.info("RESPONSE: $result")
+        //logger.info("RESPONSE: $result")
         return result
     }
 }

@@ -211,14 +211,14 @@ class V2Executor(val plugin: V2Plugin, val type: String) {
             "incrementPercentage" -> {
                 val state = payload.get("deltaPercentage") as JsonObject
                 val value = state.get("value").asDouble
-                device.decrementPercentage(value)
+                device.incrementPercentage(value)
                 if (device.isError) return null
                 return response
             }
             "setPercentage" -> {
                 val state = payload.get("percentageState") as JsonObject
                 val value = state.get("value").asDouble
-                device.decrementPercentage(value)
+                device.setPercentage(value)
                 if (device.isError) return null
                 return response
             }

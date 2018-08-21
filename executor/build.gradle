@@ -12,6 +12,8 @@ buildscript {
     }
 }
 
+buildDir = 'build'
+
 apply plugin: 'kotlin'
 
 repositories {

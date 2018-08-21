@@ -79,9 +79,6 @@ class UserController : AbstractController() {
         userTemp.mkdir()
 
         "Building executor...".println()
-
-
-
         home.tls.client.file("client-keystore.jks").override(home.executor.srcMainRes.tls.file("client-keystore.jks"))
         home.tls.client.file("client-truststore.jks").override(home.executor.srcMainRes.tls.file("client-truststore.jks"))
         home.executor.srcMainRes.file("settings.json").writeText(gson.toJson(settings))

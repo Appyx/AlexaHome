@@ -10,7 +10,7 @@ class App() {
     private val setupPolicy = mutableListOf<Triple<String, String, () -> Unit>>()
 
     init {
-        setupPolicy.add(Triple("install", "Installs the base components", { InstallController().install() }))
+        setupPolicy.add(Triple("install", "Installs the base components (project, CA)", { InstallController().install() }))
         setupPolicy.add(Triple("uninstall", "Uninstalls the base components", { InstallController().uninstall() }))
         setupPolicy.add(Triple("update", "Installs new base components but keeps configuration", { InstallController().update() }))
 

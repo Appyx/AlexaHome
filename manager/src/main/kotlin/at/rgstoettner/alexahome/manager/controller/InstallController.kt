@@ -9,7 +9,6 @@ class InstallController : AbstractController() {
 
     private val gitRepo = "https://github.com/Appyx/AlexaHome.git"
 
-
     fun install() {
         if (isInstalled) handleFatalError(CliError.ALREADY_INSTALLED)
 
@@ -17,14 +16,14 @@ class InstallController : AbstractController() {
 
         "Fetching project...".println()
         "git clone $gitRepo".runCommand()
-        "chmod 700 ${home}".runCommand()
+        "chmod 700 $home".runCommand()
 
         "Now a Certificate Authority for signing server and client will be installed.".println()
         "Please provide a password. You will need it to add users later.".println()
         val pass = requiredReadLine {
             uninstall(true)
         }
-        "Genrating Certificate Authority..".println()
+        "Generating Certificate Authority..".println()
         "chmod +x ${home.tls.file("gen_ca.sh")}".runCommand()
         "echo export SAN=DNS:localhost,IP:127.0.0.1".runCommand()
         "./gen_ca.sh $pass".runCommandInside(home.tls)

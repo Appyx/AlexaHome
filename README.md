@@ -47,7 +47,9 @@ You also get features which you won't get with the 'blank' Amazon API.
 * Host the actual Skill anywhere you want (home,remote server,Amazon...).
 * Ongoing development under the hood. (So once a new API is available you just use other interfaces in your Java/Kotlin code)
 
-And all is free (you still need one credit card for the AWS account, but there is a free tier which should last a while)
+And all is free (you still need one credit card for the AWS account, but there is a free tier which should last forever if you only use it for yourself)
+
+If you want to skip the AWS part, you can send me an email and I can add you as a user to my personal configuration for free (as long as there is still space left in my free tier). 
 
 
 ### How to start?

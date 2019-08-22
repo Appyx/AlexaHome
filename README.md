@@ -1,3 +1,6 @@
+
+> Note: This repository is not maintained anymore because Home Assistant can be used to achieve the same goal.
+
 # AlexaHome
 The easy way to create Alexa Smart Home Skills (MTLS secured).
 
